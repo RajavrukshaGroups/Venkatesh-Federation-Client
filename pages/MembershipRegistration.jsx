@@ -1,212 +1,645 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import Select from "react-select";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import api from "../services/api";
 
 const MembershipRegistration = () => {
-  const [selectedState, setSelectedState] = useState("");
+  /* =========================
+     ADDRESS STATES
+  ========================= */
+  const { referrerId } = useParams();
+  const [referrerCompany, setReferrerCompany] = useState("");
+  const [pin, setPin] = useState("");
+  const [state, setState] = useState("");
+  const [district, setDistrict] = useState("");
+  const [taluk, setTaluk] = useState("");
+  const [street, setStreet] = useState("");
+  const [pinLoading, setPinLoading] = useState(false);
 
-  const indianStates = [
-    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", 
-    "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", 
-    "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", 
-    "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", 
-    "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
-  ];
+  /* =========================
+     FORM STATES
+  ========================= */
+  const [companyName, setCompanyName] = useState("");
+  const [proprietors, setProprietors] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [gstNumber, setGstNumber] = useState("");
+  const [majorCommodities, setMajorCommodities] = useState(["", ""]);
 
-  const districtsMap = {
-    "Karnataka": [
-      "Bagalkot", "Ballari (Bellary)", "Belagavi (Belgaum)", "Bengaluru (Bangalore) Rural", "Bengaluru (Bangalore) Urban", 
-      "Bidar", "Chamarajanagar", "Chikballapur", "Chikkamagaluru (Chikmagalur)", "Chitradurga", "Dakshina Kannada", 
-      "Davangere", "Dharwad", "Gadag", "Hassan", "Haveri", "Kalaburagi (Gulbarga)", "Kodagu", "Kolar", "Koppal", 
-      "Mandya", "Mysuru (Mysore)", "Raichur", "Ramanagara", "Shivamogga (Shimoga)", "Tumakuru (Tumkur)", "Udupi", 
-      "Uttara Kannada (Karwar)", "Vijayapura (Bijapur)", "Yadgir"
-    ],
-    "Maharashtra": ["Mumbai City", "Mumbai Suburban", "Pune", "Nagpur", "Nashik", "Aurangabad", "Thane"],
-    "Delhi": ["Central Delhi", "East Delhi", "New Delhi", "North Delhi", "North East Delhi", "North West Delhi", "Shahdara", "South Delhi", "South East Delhi", "South West Delhi", "West Delhi"],
-    "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli"],
-    "Kerala": ["Thiruvananthapuram", "Kollam", "Alappuzha", "Pathanamthitta", "Kottayam", "Idukki", "Ernakulam", "Thrissur", "Palakkad", "Malappuram", "Kozhikode", "Wayanad", "Kannur", "Kasaragod"]
+  /* =========================
+     BUSINESS STATES
+  ========================= */
+  const [categories, setCategories] = useState([]);
+  const [businessCategory, setBusinessCategory] = useState("");
+  const [businessType, setBusinessType] = useState([]);
+  const [categoryLoading, setCategoryLoading] = useState(false);
+
+  const [bankName, setBankName] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [ifscCode, setIfscCode] = useState("");
+
+  const [errors, setErrors] = useState({});
+
+  const categoryOptions = categories.map((cat) => ({
+    value: cat._id,
+    label: cat.name,
+  }));
+
+  /* =========================
+     SUBMIT LOADER
+  ========================= */
+  const [loading, setLoading] = useState(false);
+
+  /* =========================
+     FETCH CATEGORIES
+  ========================= */
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setCategoryLoading(true);
+        const res = await api.get("/admin/category/getCategories");
+        if (res.success) setCategories(res.data);
+      } catch (err) {
+        toast.error("Failed to load categories");
+      } finally {
+        setCategoryLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    // reset on every change
+    setReferrerCompany("");
+
+    if (!referrerId) return;
+
+    // 🚨 allow ONLY 6-digit numeric IDs
+    if (!/^\d{6}$/.test(referrerId)) return;
+
+    const fetchReferrer = async () => {
+      try {
+        const res = await api.get(`/users/referral/${referrerId}`);
+
+        if (res.success) {
+          setReferrerCompany(res.data.companyName);
+        }
+      } catch {
+        setReferrerCompany("");
+      }
+    };
+
+    fetchReferrer();
+  }, [referrerId]);
+
+  /* =========================
+     FETCH ADDRESS BY PIN
+  ========================= */
+  const fetchAddressByPin = async (pincode) => {
+    if (pincode.length !== 6) return;
+
+    try {
+      setPinLoading(true);
+      const res = await fetch(
+        `https://api.postalpincode.in/pincode/${pincode}`
+      );
+      const data = await res.json();
+
+      if (data[0]?.Status === "Success") {
+        const info = data[0].PostOffice[0];
+        setState(info.State);
+        setDistrict(info.District);
+        setTaluk(info.Block || "");
+      } else {
+        resetAddress();
+        toast.error("Invalid PIN Code");
+      }
+    } catch {
+      resetAddress();
+      toast.error("Failed to fetch address");
+    } finally {
+      setPinLoading(false);
+    }
   };
 
-  const currentDistricts = selectedState && districtsMap[selectedState] ? districtsMap[selectedState].sort() : [];
+  const resetAddress = () => {
+    setState("");
+    setDistrict("");
+    setTaluk("");
+  };
+
+  /* =========================
+     BUSINESS TYPE HANDLER
+  ========================= */
+  const toggleBusinessType = (type) => {
+    setBusinessType((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
+  /* =========================
+     SUBMIT HANDLER
+  ========================= */
+
+  const referralPayload = referrerId
+    ? { referredByUserId: referrerId }
+    : { referredBy: "ADMIN" };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!companyName.trim()) newErrors.companyName = "Company Name is required";
+    if (!proprietors.trim())
+      newErrors.proprietors = "Proprietor / Partner name is required";
+
+    if (!pin) newErrors.pin = "PIN Code is required";
+    else if (pin.length !== 6) newErrors.pin = "PIN Code must be 6 digits";
+
+    if (!state) newErrors.state = "State is required";
+    if (!district) newErrors.district = "District is required";
+
+    if (!mobileNumber) newErrors.mobileNumber = "Mobile number is required";
+    else if (mobileNumber.length !== 10)
+      newErrors.mobileNumber = "Mobile number must be 10 digits";
+
+    if (!email) newErrors.email = "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      newErrors.email = "Invalid email address";
+
+    if (!businessCategory)
+      newErrors.businessCategory = "Business category is required";
+
+    if (!businessType.length)
+      newErrors.businessType = "Business type is required";
+
+    if (!majorCommodities.some((c) => c.trim())) {
+      newErrors.majorCommodities = "At least one major commodity is required";
+    }
+
+    // GST
+    if (gstNumber) {
+      if (gstNumber.length !== 15)
+        newErrors.gstNumber = "GST must be 15 characters";
+      else if (
+        !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(gstNumber)
+      )
+        newErrors.gstNumber = "Invalid GST format";
+    }
+
+    // BANK DETAILS (optional but grouped)
+    if (bankName || accountNumber || ifscCode) {
+      if (!bankName) newErrors.bankName = "Bank name is required";
+      if (!accountNumber)
+        newErrors.accountNumber = "Account number is required";
+      else if (accountNumber.length < 9)
+        newErrors.accountNumber = "Invalid account number";
+
+      if (!ifscCode) newErrors.ifscCode = "IFSC code is required";
+      else if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifscCode))
+        newErrors.ifscCode = "Invalid IFSC code";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      return Object.values(newErrors)[0]; // first error message
+    }
+
+    return null;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (loading) return;
+
+    // if (
+    //   !companyName ||
+    //   !proprietors ||
+    //   !pin ||
+    //   !state ||
+    //   !district ||
+    //   !mobileNumber ||
+    //   !email ||
+    //   !businessCategory ||
+    //   businessType.length === 0
+    // ) {
+    //   toast.error("Please fill all required fields");
+    //   return;
+    // }
+    const error = validateForm();
+    if (error) {
+      toast.error(error);
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const payload = {
+        companyName,
+        proprietors,
+        address: {
+          street,
+          pin,
+          state,
+          district,
+          taluk,
+        },
+        mobileNumber,
+        email,
+        businessCategory,
+        businessType,
+        majorCommodities: majorCommodities.filter(Boolean),
+        gstNumber,
+
+        //bank details
+        bankName,
+        accountNumber,
+        ifscCode,
+
+        //referral info
+        referredByUserId: referrerId || null,
+      };
+
+      const res = await api.post("/users/create-user", payload);
+
+      if (res.success) {
+        toast.success("Member registered successfully 🎉");
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      }
+    } catch (err) {
+      console.log("error response", err);
+      toast.error(err || "Submission failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="bg-slate-100 min-h-screen py-10 font-sans">
-      <div className="max-w-4xl mx-auto bg-[#FFFBE6] shadow-2xl border border-gray-300 print:shadow-none print:border-0">
-        <div className="bg-[#ED1C24] text-white p-6 relative">
-             <div className="flex flex-col md:flex-row items-center gap-4">
-                 <div className="w-24 h-24 bg-white rounded-full flex-shrink-0 flex items-center justify-center border-4 border-white shadow-md text-center">
-                    <span className="text-[#ED1C24] font-bold text-3xl font-serif leading-none">FTII<br/><span className="text-[10px]">INDIA</span></span>
-                 </div>
-                 <div className="flex-grow text-center">
-                     <h1 className="text-3xl md:text-5xl font-black uppercase leading-tight tracking-tight">Federation of Trade and<br/>Industry of India</h1>
-                 </div>
-             </div>
-             <div className="text-center mt-4 text-sm md:text-base font-medium space-y-1">
-                 <p>B-1/67, Indira Chowk, Near Nanital Bank, New Kondli, New Delhi</p>
-                 <p className="font-bold text-yellow-300 text-lg">(Karnataka Chapter)</p>
-                 <p># 20, Millanium Business Bay, AM Road, KPN Extn., Bengaluru - 560 002</p>
-                 <p>Email: ftiikarnataka@gmail.com</p>
-             </div>
+      <ToastContainer position="top-right" autoClose={3000} />
+
+      <div className="max-w-4xl mx-auto bg-[#FFFBE6] shadow-2xl border border-gray-300">
+        {/* HEADER */}
+        <div className="bg-[#ED1C24] text-white p-6 text-center">
+          <h1 className="text-3xl md:text-5xl font-black uppercase">
+            Federation of Trade and Industry of India
+          </h1>
+          <p className="font-bold text-yellow-300 mt-2">(Karnataka Chapter)</p>
         </div>
 
-        <div className="relative -mt-6 text-center mb-12 px-4">
-             <span className="inline-block bg-[#0054A6] text-white font-bold text-xl md:text-2xl px-12 py-3 rounded-full shadow-lg border-4 border-white uppercase tracking-wide">
-                Membership Application Form
-             </span>
+        {/* TITLE */}
+        <div className="relative -mt-6 text-center mb-12">
+          <span className="bg-[#0054A6] text-white font-bold text-xl px-10 py-3 rounded-full border-4 border-white">
+            Membership Application Form
+          </span>
         </div>
 
-        <div className="px-8 md:px-16 pb-16 text-navy-900">
-             <div className="flex flex-col md:flex-row justify-between items-start mb-8 font-bold text-lg gap-4">
-                 <div>
-                     <p>TO,</p>
-                     <p>THE PRESIDENT</p>
-                     <p>FTII, KARNATAKA CHAPTER</p>
-                 </div>
-                 <div className="border border-gray-400 w-full md:w-48 h-12 flex items-center px-2 bg-white self-end md:self-auto">
-                     <span className="text-red-500 mr-2">No.</span>
-                     <input type="text" className="w-full h-full bg-transparent focus:outline-none" />
-                 </div>
-             </div>
+        {/* FORM */}
+        <div className="px-8 md:px-16 pb-16">
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-10 text-lg font-bold"
+          >
+            {/* COMPANY NAME */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <span className="md:w-1/3">1. COMPANY NAME</span>
+              {/* <input
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                // className="flex-1 border-b-2 border-dotted bg-transparent px-2 uppercase"
+                className="flex-1 border-b-2 border-dotted px-2 uppercase"
+              /> */}
+              <input
+                value={companyName}
+                onChange={(e) => {
+                  setCompanyName(e.target.value);
+                  setErrors((prev) => ({ ...prev, companyName: null }));
+                }}
+                className={`flex-1 border-b-2 px-2 uppercase ${
+                  errors.companyName ? "border-red-500" : "border-dotted"
+                }`}
+              />
+            </div>
 
-             <div className="mb-8 font-bold">
-                 <p>DEAR SIR,</p>
-                 <div className="md:ml-16 mt-2">
-                    <p>WE REQUEST YOU TO ENROLL US AS MEMBER OF</p>
-                    <p>FEDERATION OF TRADE & INDUSTRY OF INDIA</p>
-                 </div>
-             </div>
+            {/* PROPRIETORS */}
+            <div className="flex flex-col gap-2">
+              <span>2. NAME OF THE PROPRIETOR / PARTNERS</span>
+              {/* <textarea
+                rows={3}
+                value={proprietors}
+                onChange={(e) => setProprietors(e.target.value)}
+                // className="border-b-2 border-dotted bg-transparent px-2 uppercase resize-none"
+                className="border-b-2 border-dotted px-2 uppercase resize-none"
+              /> */}
+              <textarea
+                rows={3}
+                value={proprietors}
+                onChange={(e) => {
+                  setProprietors(e.target.value);
+                  setErrors((prev) => ({ ...prev, proprietors: null }));
+                }}
+                className={`border-b-2 px-2 uppercase resize-none ${
+                  errors.proprietors ? "border-red-500" : "border-dotted"
+                }`}
+              />
+            </div>
 
-             <form className="space-y-8 text-lg font-bold text-navy-900">
-                 <div className="flex flex-col">
-                     <div className="flex flex-col md:flex-row md:items-end gap-2">
-                        <span className="whitespace-nowrap">1. COMPANY NAME</span>
-                        <input type="text" className="w-full border-b-2 border-dotted border-gray-400 bg-transparent focus:outline-none focus:border-navy-900 uppercase font-medium px-2" />
-                     </div>
-                 </div>
+            {/* ADDRESS */}
+            <div className="flex flex-col gap-6">
+              <span>3. ADDRESS</span>
 
-                 <div className="flex flex-col gap-4">
-                     <div className="flex flex-col md:flex-row md:items-end gap-2">
-                        <span className="whitespace-nowrap">2. NAME OF THE PROPRIETOR / PARTNERS</span>
-                        <input type="text" className="w-full border-b-2 border-dotted border-gray-400 bg-transparent focus:outline-none focus:border-navy-900 uppercase font-medium px-2" />
-                     </div>
-                     <input type="text" className="w-full border-b-2 border-dotted border-gray-400 bg-transparent focus:outline-none focus:border-navy-900 uppercase font-medium px-2" />
-                 </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <span>PIN</span>
+                  {/* <input
+                    value={pin}
+                    maxLength={6}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/\D/g, "");
+                      setPin(v);
+                      if (v.length === 6) fetchAddressByPin(v);
+                    }}
+                    // className="border-b-2 border-dotted bg-transparent px-2"
+                    className="border-b-2 border-dotted px-2"
+                  /> */}
+                  <input
+                    value={pin}
+                    maxLength={6}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/\D/g, "");
+                      setPin(v);
+                      setErrors((prev) => ({ ...prev, pin: null }));
+                      if (v.length === 6) fetchAddressByPin(v);
+                    }}
+                    className={`border-b-2 px-2 ${
+                      errors.pin ? "border-red-500" : "border-dotted"
+                    }`}
+                  />
+                  {pinLoading && (
+                    <p className="text-xs text-gray-500">Fetching address…</p>
+                  )}
+                </div>
 
-                 <div className="flex flex-col gap-4">
-                     <div className="flex flex-col md:flex-row md:items-end gap-2">
-                        <span className="whitespace-nowrap">3. ADDRESS</span>
-                        <input type="text" className="w-full border-b-2 border-dotted border-gray-400 bg-transparent focus:outline-none focus:border-navy-900 uppercase font-medium px-2" />
-                     </div>
-                     <input type="text" className="w-full border-b-2 border-dotted border-gray-400 bg-transparent focus:outline-none focus:border-navy-900 uppercase font-medium px-2" />
-                     
-                     <div className="flex flex-wrap gap-4 mt-2">
-                        <div className="flex-1 flex items-end gap-2 min-w-[200px]">
-                            <span>TALUK</span>
-                            <input type="text" className="w-full border-b-2 border-dotted border-gray-400 bg-transparent focus:outline-none focus:border-navy-900 uppercase font-medium px-2" />
-                        </div>
-                        <div className="flex-1 flex items-end gap-2 min-w-[200px]">
-                            <span>DISTRICT</span>
-                            <select 
-                                className="w-full border-b-2 border-dotted border-gray-400 bg-transparent focus:outline-none focus:border-navy-900 uppercase font-medium px-2 appearance-none"
-                                disabled={!selectedState}
-                            >
-                                <option value="" className="text-gray-400">
-                                   {selectedState ? (currentDistricts.length > 0 ? "Select District" : "Other District") : "Select State First"}
-                                </option>
-                                {currentDistricts.map((district) => (
-                                    <option key={district} value={district}>{district.toUpperCase()}</option>
-                                ))}
-                            </select>
-                        </div>
-                     </div>
-                     <div className="flex flex-wrap gap-4">
-                        <div className="flex-1 flex items-end gap-2 min-w-[200px]">
-                            <span>STATE</span>
-                            <select 
-                                className="w-full border-b-2 border-dotted border-gray-400 bg-transparent focus:outline-none focus:border-navy-900 uppercase font-medium px-2 appearance-none"
-                                value={selectedState}
-                                onChange={(e) => setSelectedState(e.target.value)}
-                            >
-                                <option value="" className="text-gray-400">Select State</option>
-                                {indianStates.map((state) => (
-                                    <option key={state} value={state}>{state.toUpperCase()}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="flex-1 flex items-end gap-2 min-w-[200px]">
-                            <span>PIN</span>
-                            <input type="text" className="w-full border-b-2 border-dotted border-gray-400 bg-transparent focus:outline-none focus:border-navy-900 uppercase font-medium px-2" />
-                        </div>
-                     </div>
-                 </div>
+                <div>
+                  <span>STATE</span>
+                  <input
+                    value={state}
+                    readOnly
+                    // className="border-b-2 border-dotted bg-gray-100 px-2 uppercase"
+                    className="border-b-2 border-dotted px-2 uppercase"
+                  />
+                </div>
 
-                 <div className="flex flex-col md:flex-row md:items-center gap-4">
-                     <span className="whitespace-nowrap">4. MOBILE NUMBER</span>
-                     <div className="flex gap-1 overflow-x-auto pb-2 md:pb-0">
-                        {[...Array(10)].map((_, i) => (
-                             <input key={i} type="text" maxLength={1} className="w-10 h-12 border border-gray-400 text-center bg-white text-xl" />
-                        ))}
-                     </div>
-                 </div>
+                <div>
+                  <span>DISTRICT</span>
+                  <input
+                    value={district}
+                    readOnly
+                    // className="border-b-2 border-dotted bg-gray-100 px-2 uppercase"
+                    className="border-b-2 border-dotted px-2 uppercase"
+                  />
+                </div>
 
-                 <div className="flex flex-col gap-4">
-                     <div className="flex flex-col md:flex-row md:items-end gap-2">
-                        <span className="whitespace-nowrap">5. MAJOR COMMODITY</span>
-                        <input type="text" className="w-full border border-gray-400 h-10 bg-white px-2 uppercase font-medium" />
-                     </div>
-                     <input type="text" className="w-full border border-gray-400 h-10 bg-white px-2 uppercase font-medium" />
-                 </div>
+                <div>
+                  <span>TALUK</span>
+                  <input
+                    value={taluk}
+                    onChange={(e) => setTaluk(e.target.value)}
+                    // className="border-b-2 border-dotted bg-transparent px-2 uppercase"
+                    className="border-b-2 border-dotted px-2 uppercase"
+                  />
+                </div>
+              </div>
 
-                 <div className="flex flex-col md:flex-row md:items-center gap-8">
-                     <span className="whitespace-nowrap">6. TYPE OF BUSINESS</span>
-                     <div className="flex items-center gap-8">
-                         <label className="flex items-center gap-3 cursor-pointer">
-                             <span>WHOLESALE</span>
-                             <div className="w-24 h-10 border border-gray-400 bg-white flex items-center justify-center">
-                                 <input type="checkbox" className="w-6 h-6" />
-                             </div>
-                         </label>
-                         <label className="flex items-center gap-3 cursor-pointer">
-                             <span>RETAIL</span>
-                             <div className="w-24 h-10 border border-gray-400 bg-white flex items-center justify-center">
-                                <input type="checkbox" className="w-6 h-6" />
-                             </div>
-                         </label>
-                     </div>
-                 </div>
+              <textarea
+                rows={3}
+                value={street}
+                onChange={(e) => setStreet(e.target.value)}
+                placeholder="Street, Area"
+                // className="border-b-2 border-dotted bg-transparent px-2 uppercase resize-none"
+                className="border-b-2 border-dotted px-2 uppercase resize-none"
+              />
+            </div>
 
-                 <div className="flex flex-col md:flex-row md:items-center gap-4">
-                     <span className="whitespace-nowrap">7. GST No :</span>
-                     <div className="flex gap-1 overflow-x-auto pb-2 md:pb-0">
-                        {[...Array(15)].map((_, i) => (
-                             <input key={i} type="text" maxLength={1} className="w-8 h-10 border border-gray-400 text-center bg-white" />
-                        ))}
-                     </div>
-                 </div>
+            {/* MOBILE */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <span className="md:w-1/3">4. MOBILE NUMBER</span>
+              <input
+                value={mobileNumber}
+                maxLength={10}
+                onChange={(e) =>
+                  setMobileNumber(e.target.value.replace(/\D/g, ""))
+                }
+                className="border px-2 h-10"
+              />
+            </div>
 
-                 <div className="flex flex-col md:flex-row md:items-center gap-2">
-                    <span className="whitespace-nowrap">8. EMAIL ID :</span>
-                    <input type="email" className="w-full border border-gray-400 h-10 bg-white px-2 font-medium" />
-                 </div>
-             </form>
+            {/* BUSINESS CATEGORY */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <span className="md:w-1/3">5. BUSINESS CATEGORY</span>
+              <div className="flex-1">
+                <Select
+                  options={categoryOptions}
+                  isLoading={categoryLoading}
+                  placeholder="Search & select category"
+                  onChange={(opt) => setBusinessCategory(opt ? opt.value : "")}
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      backgroundColor: "white",
+                      border: "none",
+                      borderBottom: "2px dotted #000",
+                      borderRadius: 0,
+                      boxShadow: "none",
+                    }),
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* BUSINESS TYPE */}
+            {/* <div className="flex flex-col md:flex-row gap-8"> */}
+            <div
+              className={`flex flex-col md:flex-row gap-8 ${
+                errors.businessType ? "border border-red-500 p-3 rounded" : ""
+              }`}
+            >
+              <span className="md:w-1/3">6. TYPE OF BUSINESS</span>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={businessType.includes("WHOLESALE")}
+                  onChange={() => {
+                    toggleBusinessType("WHOLESALE");
+                    setErrors((prev) => ({ ...prev, businessType: null }));
+                  }}
+                />{" "}
+                WHOLESALE
+              </label>
+
+              <label>
+                <input
+                  type="checkbox"
+                  checked={businessType.includes("RETAIL")}
+                  onChange={() => {
+                    toggleBusinessType("RETAIL");
+                    setErrors((prev) => ({ ...prev, businessType: null }));
+                  }}
+                />{" "}
+                RETAIL
+              </label>
+            </div>
+
+            {/* MAJOR COMMODITY */}
+            <div className="flex flex-col gap-2">
+              <span>7. MAJOR COMMODITY</span>
+              <input
+                value={majorCommodities[0]}
+                onChange={(e) => {
+                  setMajorCommodities([e.target.value, majorCommodities[1]]);
+                  setErrors((prev) => ({ ...prev, majorCommodities: null }));
+                }}
+                className={`border h-10 px-2 uppercase ${
+                  errors.majorCommodities ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+
+              <input
+                value={majorCommodities[1]}
+                onChange={(e) => {
+                  setMajorCommodities([majorCommodities[0], e.target.value]);
+                  setErrors((prev) => ({ ...prev, majorCommodities: null }));
+                }}
+                className={`border h-10 px-2 uppercase ${
+                  errors.majorCommodities ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+            </div>
+
+            {/* GST */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <span className="md:w-1/3">8. GST NO</span>
+              {/* <input
+                value={gstNumber}
+                onChange={(e) => setGstNumber(e.target.value)}
+                maxLength={15}
+                className="border h-10 px-2 uppercase"
+              /> */}
+              <input
+                value={gstNumber}
+                onChange={(e) => {
+                  setGstNumber(e.target.value.toUpperCase());
+                  setErrors((prev) => ({ ...prev, gstNumber: null }));
+                }}
+                maxLength={15}
+                className={`border h-10 px-2 uppercase ${
+                  errors.gstNumber ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+            </div>
+
+            {/* EMAIL */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <span className="md:w-1/3">9. EMAIL</span>
+              {/* <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="border h-10 px-2 flex-1"
+              /> */}
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setErrors((prev) => ({ ...prev, email: null }));
+                }}
+                className={`border h-10 px-2 flex-1 ${
+                  errors.email ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+            </div>
+
+            {referrerId && referrerCompany && (
+              <div className="flex flex-col md:flex-row gap-4">
+                <span className="md:w-1/3">10. REFERRED BY</span>
+                <input
+                  value={`${referrerCompany}`}
+                  readOnly
+                  className="flex-1 border-b-2 border-dotted bg-gray-100 px-2 uppercase"
+                />
+              </div>
+            )}
+
+            {/* BANK DETAILS */}
+            <div className="flex flex-col gap-6">
+              <span>11. BANK DETAILS (FOR MONEY BACK OFFER)</span>
+
+              <div className="flex flex-col md:flex-row gap-4">
+                <span className="md:w-1/3">BANK NAME</span>
+                <input
+                  value={bankName}
+                  onChange={(e) => {
+                    setBankName(e.target.value);
+                    setErrors((prev) => ({ ...prev, bankName: null }));
+                  }}
+                  className={`flex-1 border-b-2 px-2 uppercase ${
+                    errors.bankName ? "border-red-500" : "border-dotted"
+                  }`}
+                />
+              </div>
+
+              <div className="flex flex-col md:flex-row gap-4">
+                <span className="md:w-1/3">A/C NO</span>
+                <input
+                  value={accountNumber}
+                  onChange={(e) => {
+                    setAccountNumber(e.target.value.replace(/\D/g, ""));
+                    setErrors((prev) => ({ ...prev, accountNumber: null }));
+                  }}
+                  className={`flex-1 border-b-2 px-2 ${
+                    errors.accountNumber ? "border-red-500" : "border-dotted"
+                  }`}
+                />
+              </div>
+
+              <div className="flex flex-col md:flex-row gap-4">
+                <span className="md:w-1/3">IFSC CODE</span>
+                <input
+                  value={ifscCode}
+                  onChange={(e) => {
+                    setIfscCode(e.target.value.toUpperCase());
+                    setErrors((prev) => ({ ...prev, ifscCode: null }));
+                  }}
+                  maxLength={11}
+                  className={`flex-1 border-b-2 px-2 uppercase ${
+                    errors.ifscCode ? "border-red-500" : "border-dotted"
+                  }`}
+                />
+              </div>
+            </div>
+
+            {/* SUBMIT */}
+            <div className="text-center pt-8">
+              <button
+                type="submit"
+                disabled={loading}
+                className={`px-10 py-3 text-white font-bold rounded ${
+                  loading ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
+                }`}
+              >
+                {loading ? "SUBMITTING..." : "SUBMIT APPLICATION"}
+              </button>
+            </div>
+          </form>
         </div>
-
-        <div className="px-8 md:px-16 pb-16 pt-8 flex flex-col md:flex-row justify-between items-end gap-8 font-bold text-navy-900 text-lg">
-             <div>
-                 MEMBERSHIP FEE &nbsp;&nbsp; RS. 3,000/-
-             </div>
-             <div className="text-center w-full md:w-auto">
-                 <div className="h-24 w-48 border-b-2 border-navy-900 mx-auto"></div> 
-                 <div className="mt-2">SEAL & SIGN</div>
-             </div>
-        </div>
-      </div>
-      
-      <div className="max-w-4xl mx-auto mt-8 flex justify-center gap-4 print:hidden px-4">
-          <button className="bg-navy-900 text-white px-8 py-3 rounded font-bold hover:bg-navy-900 shadow-lg" onClick={() => window.print()}>
-             Print Form
-          </button>
-          <button className="bg-gold-500 text-navy-900 px-8 py-3 rounded font-bold hover:bg-gold-400 shadow-lg">
-             Submit Application
-          </button>
       </div>
     </div>
   );

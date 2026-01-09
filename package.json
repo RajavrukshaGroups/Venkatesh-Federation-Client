@@ -9,10 +9,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react-router-dom": "^7.10.1",
+    "axios": "^1.13.2",
+    "country-state-city": "^3.2.1",
+    "india-states-districts": "^1.8.0",
     "lucide-react": "^0.561.0",
+    "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "react": "^19.2.3"
+    "react-router-dom": "^7.10.1",
+    "react-select": "^5.10.2",
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
