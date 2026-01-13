@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -10,6 +10,7 @@ const MembershipRegistration = () => {
      ADDRESS STATES
   ========================= */
   const { referrerId } = useParams();
+  const navigate = useNavigate();
   const [referrerCompany, setReferrerCompany] = useState("");
   const [pin, setPin] = useState("");
   const [state, setState] = useState("");
@@ -40,6 +41,17 @@ const MembershipRegistration = () => {
   const [accountNumber, setAccountNumber] = useState("");
   const [ifscCode, setIfscCode] = useState("");
 
+  /* =========================
+     MEMBERSHIP PLAN STATES
+  ========================= */
+  const [membershipPlans, setMembershipPlans] = useState([]);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [membershipAmount, setMembershipAmount] = useState("");
+  const [planLoading, setPlanLoading] = useState(false);
+  const [showPlanBenefits, setShowPlanBenefits] = useState(false);
+  const [selectedPlanBenefits, setSelectedPlanBenefits] = useState([]);
+  console.log("selected plan", selectedPlan);
+
   const [errors, setErrors] = useState({});
 
   const categoryOptions = categories.map((cat) => ({
@@ -47,13 +59,16 @@ const MembershipRegistration = () => {
     label: cat.name,
   }));
 
+  const selectedCategoryOptions =
+    categoryOptions.find((opt) => opt.value === businessCategory) || null;
+
   /* =========================
      SUBMIT LOADER
   ========================= */
   const [loading, setLoading] = useState(false);
 
   /* =========================
-     FETCH CATEGORIES
+     FETCH CATEGORIES & MEMBERSHIP PLANS
   ========================= */
   useEffect(() => {
     const fetchCategories = async () => {
@@ -68,7 +83,28 @@ const MembershipRegistration = () => {
       }
     };
 
+    const fetchMembershipPlans = async () => {
+      try {
+        setPlanLoading(true);
+        const response = await api.get(
+          "/admin/businessplans/view-membershipplans/regform"
+        );
+        console.log("response", response);
+        if (response.success) {
+          setMembershipPlans(response.data || []);
+        } else {
+          toast.error("Failed to load membership plans");
+        }
+      } catch (error) {
+        console.error("Error fetching membership plans:", error);
+        toast.error("Failed to load membership plans");
+      } finally {
+        setPlanLoading(false);
+      }
+    };
+
     fetchCategories();
+    fetchMembershipPlans();
   }, []);
 
   useEffect(() => {
@@ -141,12 +177,73 @@ const MembershipRegistration = () => {
   };
 
   /* =========================
-     SUBMIT HANDLER
+     MEMBERSHIP PLAN HANDLERS
   ========================= */
+  const handlePlanChange = (selectedOption) => {
+    if (!selectedOption) {
+      setSelectedPlan(null);
+      setMembershipAmount("");
+      setSelectedPlanBenefits([]);
+      setShowPlanBenefits(false);
+      return;
+    }
 
-  const referralPayload = referrerId
-    ? { referredByUserId: referrerId }
-    : { referredBy: "ADMIN" };
+    const plan = selectedOption.data;
+
+    setSelectedPlan(plan);
+    setMembershipAmount(Number(plan.amount)); // ✅ force number
+    setSelectedPlanBenefits(plan.benefits || []);
+    setShowPlanBenefits(true);
+    setErrors((prev) => ({ ...prev, selectedPlan: null }));
+  };
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const renderPlanOption = (plan) => {
+    return (
+      <div className="py-2">
+        <div className="flex justify-between items-center">
+          <span className="font-semibold text-gray-800">{plan.name}</span>
+          <span className="font-bold text-blue-600">
+            {formatCurrency(plan.amount)}
+          </span>
+        </div>
+        {plan.description && (
+          <p className="text-xs text-gray-600 mt-1 truncate">
+            {plan.description}
+          </p>
+        )}
+        {plan.benefits && plan.benefits.length > 0 && (
+          <div className="text-xs text-gray-500 mt-1">
+            Benefits: {plan.benefits.length} included
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  console.log("membership plans", membershipPlans);
+
+  const planOptions = membershipPlans.map((plan) => ({
+    value: plan._id,
+    label: plan.name, // 🔥 keep label SIMPLE
+    data: plan,
+  }));
+
+  const selectedPlanOption = planOptions.find(
+    (opt) => opt.value === selectedPlan?._id
+  );
+
+  /* =========================
+     VALIDATION & SUBMIT HANDLER
+  ========================= */
 
   const validateForm = () => {
     const newErrors = {};
@@ -174,6 +271,9 @@ const MembershipRegistration = () => {
 
     if (!businessType.length)
       newErrors.businessType = "Business type is required";
+
+    if (!selectedPlan)
+      newErrors.selectedPlan = "Please select a membership plan";
 
     if (!majorCommodities.some((c) => c.trim())) {
       newErrors.majorCommodities = "At least one major commodity is required";
@@ -211,24 +311,106 @@ const MembershipRegistration = () => {
     return null;
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (loading) return;
+
+  //   const error = validateForm();
+  //   if (error) {
+  //     toast.error(error);
+  //     return;
+  //   }
+
+  //   try {
+  //     setLoading(true);
+
+  //     const payload = {
+  //       companyName,
+  //       proprietors,
+  //       address: {
+  //         street,
+  //         pin,
+  //         state,
+  //         district,
+  //         taluk,
+  //       },
+  //       mobileNumber,
+  //       email,
+  //       businessCategory,
+  //       businessType,
+  //       majorCommodities: majorCommodities.filter(Boolean),
+  //       gstNumber,
+
+  //       // Membership details
+  //       membershipPlan: selectedPlan._id,
+  //       membershipPlanName: selectedPlan.name,
+  //       membershipAmount: selectedPlan.amount,
+  //       membershipDuration: selectedPlan.durationInDays,
+
+  //       //bank details
+  //       bankName,
+  //       accountNumber,
+  //       ifscCode,
+
+  //       //referral info
+  //       referredByUserId: referrerId || null,
+  //     };
+
+  //     const res = await api.post("/users/create-user", payload);
+
+  //     if (res.success) {
+  //       toast.success("Member registered successfully 🎉");
+
+  //       setTimeout(() => {
+  //         window.location.reload();
+  //       }, 3000);
+  //     }
+  //   } catch (err) {
+  //     console.log("error response", err);
+  //     toast.error(err || "Submission failed");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  const resetForm = () => {
+    //address
+    setPin("");
+    setState("");
+    setDistrict("");
+    setTaluk("");
+    setStreet("");
+
+    //company/contact
+    setCompanyName("");
+    setProprietors("");
+    setMobileNumber("");
+    setEmail("");
+    setGstNumber("");
+
+    //business
+    setBusinessCategory("");
+    setBusinessType([]);
+    setMajorCommodities(["", ""]);
+
+    //bank
+    setBankName("");
+    setAccountNumber("");
+    setIfscCode("");
+
+    //Membership
+    setSelectedPlan("");
+    setMembershipAmount("");
+    setShowPlanBenefits("");
+    setSelectedPlanBenefits("");
+
+    //errors
+    setErrors({});
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (loading) return;
 
-    // if (
-    //   !companyName ||
-    //   !proprietors ||
-    //   !pin ||
-    //   !state ||
-    //   !district ||
-    //   !mobileNumber ||
-    //   !email ||
-    //   !businessCategory ||
-    //   businessType.length === 0
-    // ) {
-    //   toast.error("Please fill all required fields");
-    //   return;
-    // }
     const error = validateForm();
     if (error) {
       toast.error(error);
@@ -238,7 +420,10 @@ const MembershipRegistration = () => {
     try {
       setLoading(true);
 
-      const payload = {
+      /* =========================
+       REGISTRATION SNAPSHOT
+    ========================= */
+      const registrationData = {
         companyName,
         proprietors,
         address: {
@@ -254,28 +439,68 @@ const MembershipRegistration = () => {
         businessType,
         majorCommodities: majorCommodities.filter(Boolean),
         gstNumber,
-
-        //bank details
-        bankName,
-        accountNumber,
-        ifscCode,
-
-        //referral info
-        referredByUserId: referrerId || null,
+        bankDetails:
+          bankName || accountNumber || ifscCode
+            ? { bankName, accountNumber, ifscCode }
+            : undefined,
+        referral: referrerId
+          ? { source: "USER", referredByUserId: referrerId }
+          : { source: "ADMIN" },
       };
 
-      const res = await api.post("/users/create-user", payload);
+      /* =========================
+       CREATE ORDER
+    ========================= */
+      const orderRes = await api.post("/admin/payment/create-order", {
+        membershipPlanId: selectedPlan._id,
+        registrationData,
+      });
 
-      if (res.success) {
-        toast.success("Member registered successfully 🎉");
-
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
+      if (!orderRes.success) {
+        toast.error("Failed to initiate payment");
+        return;
       }
+
+      if (orderRes.message) {
+        toast.success(orderRes.message);
+      }
+
+      /* =========================
+       RAZORPAY OPTIONS
+    ========================= */
+      const options = {
+        key: orderRes.key,
+        amount: orderRes.amount * 100,
+        currency: "INR",
+        name: "Federation of Trade and Industry of India",
+        description: selectedPlan.name + " Membership",
+        order_id: orderRes.orderId,
+
+        handler: function () {
+          toast.success(
+            "Payment successful .Your membership will be activated shortly."
+          );
+          resetForm();
+
+          navigate("/membership-registration", { replace: true });
+        },
+
+        prefill: {
+          name: companyName,
+          email,
+          contact: mobileNumber,
+        },
+
+        theme: {
+          color: "#0054A6",
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
     } catch (err) {
-      console.log("error response", err);
-      toast.error(err || "Submission failed");
+      console.log("Payment error:", err);
+      toast.error(err?.message || "Payment failed");
     } finally {
       setLoading(false);
     }
@@ -310,12 +535,6 @@ const MembershipRegistration = () => {
             {/* COMPANY NAME */}
             <div className="flex flex-col md:flex-row gap-4">
               <span className="md:w-1/3">1. COMPANY NAME</span>
-              {/* <input
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                // className="flex-1 border-b-2 border-dotted bg-transparent px-2 uppercase"
-                className="flex-1 border-b-2 border-dotted px-2 uppercase"
-              /> */}
               <input
                 value={companyName}
                 onChange={(e) => {
@@ -331,13 +550,6 @@ const MembershipRegistration = () => {
             {/* PROPRIETORS */}
             <div className="flex flex-col gap-2">
               <span>2. NAME OF THE PROPRIETOR / PARTNERS</span>
-              {/* <textarea
-                rows={3}
-                value={proprietors}
-                onChange={(e) => setProprietors(e.target.value)}
-                // className="border-b-2 border-dotted bg-transparent px-2 uppercase resize-none"
-                className="border-b-2 border-dotted px-2 uppercase resize-none"
-              /> */}
               <textarea
                 rows={3}
                 value={proprietors}
@@ -358,17 +570,6 @@ const MembershipRegistration = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <span>PIN</span>
-                  {/* <input
-                    value={pin}
-                    maxLength={6}
-                    onChange={(e) => {
-                      const v = e.target.value.replace(/\D/g, "");
-                      setPin(v);
-                      if (v.length === 6) fetchAddressByPin(v);
-                    }}
-                    // className="border-b-2 border-dotted bg-transparent px-2"
-                    className="border-b-2 border-dotted px-2"
-                  /> */}
                   <input
                     value={pin}
                     maxLength={6}
@@ -392,8 +593,7 @@ const MembershipRegistration = () => {
                   <input
                     value={state}
                     readOnly
-                    // className="border-b-2 border-dotted bg-gray-100 px-2 uppercase"
-                    className="border-b-2 border-dotted px-2 uppercase"
+                    className="border-b-2 border-dotted px-2 uppercase bg-gray-50"
                   />
                 </div>
 
@@ -402,8 +602,7 @@ const MembershipRegistration = () => {
                   <input
                     value={district}
                     readOnly
-                    // className="border-b-2 border-dotted bg-gray-100 px-2 uppercase"
-                    className="border-b-2 border-dotted px-2 uppercase"
+                    className="border-b-2 border-dotted px-2 uppercase bg-gray-50"
                   />
                 </div>
 
@@ -412,7 +611,6 @@ const MembershipRegistration = () => {
                   <input
                     value={taluk}
                     onChange={(e) => setTaluk(e.target.value)}
-                    // className="border-b-2 border-dotted bg-transparent px-2 uppercase"
                     className="border-b-2 border-dotted px-2 uppercase"
                   />
                 </div>
@@ -423,7 +621,6 @@ const MembershipRegistration = () => {
                 value={street}
                 onChange={(e) => setStreet(e.target.value)}
                 placeholder="Street, Area"
-                // className="border-b-2 border-dotted bg-transparent px-2 uppercase resize-none"
                 className="border-b-2 border-dotted px-2 uppercase resize-none"
               />
             </div>
@@ -434,10 +631,13 @@ const MembershipRegistration = () => {
               <input
                 value={mobileNumber}
                 maxLength={10}
-                onChange={(e) =>
-                  setMobileNumber(e.target.value.replace(/\D/g, ""))
-                }
-                className="border px-2 h-10"
+                onChange={(e) => {
+                  setMobileNumber(e.target.value.replace(/\D/g, ""));
+                  setErrors((prev) => ({ ...prev, mobileNumber: null }));
+                }}
+                className={`border px-2 h-10 ${
+                  errors.mobileNumber ? "border-red-500" : "border-gray-300"
+                }`}
               />
             </div>
 
@@ -449,13 +649,19 @@ const MembershipRegistration = () => {
                   options={categoryOptions}
                   isLoading={categoryLoading}
                   placeholder="Search & select category"
-                  onChange={(opt) => setBusinessCategory(opt ? opt.value : "")}
+                  value={selectedCategoryOptions}
+                  onChange={(opt) => {
+                    setBusinessCategory(opt ? opt.value : "");
+                    setErrors((prev) => ({ ...prev, businessCategory: null }));
+                  }}
                   styles={{
-                    control: (base) => ({
+                    control: (base, state) => ({
                       ...base,
                       backgroundColor: "white",
                       border: "none",
-                      borderBottom: "2px dotted #000",
+                      borderBottom: errors.businessCategory
+                        ? "2px solid #ef4444"
+                        : "2px dotted #000",
                       borderRadius: 0,
                       boxShadow: "none",
                     }),
@@ -465,7 +671,6 @@ const MembershipRegistration = () => {
             </div>
 
             {/* BUSINESS TYPE */}
-            {/* <div className="flex flex-col md:flex-row gap-8"> */}
             <div
               className={`flex flex-col md:flex-row gap-8 ${
                 errors.businessType ? "border border-red-500 p-3 rounded" : ""
@@ -497,9 +702,106 @@ const MembershipRegistration = () => {
               </label>
             </div>
 
+            {/* MEMBERSHIP PLAN SELECTION */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <span className="md:w-1/3">7. SELECT MEMBERSHIP PLAN</span>
+              <div className="flex-1">
+                <Select
+                  options={planOptions}
+                  isLoading={planLoading}
+                  placeholder="Select a membership plan"
+                  onChange={handlePlanChange}
+                  value={selectedPlanOption || null} // ✅ FIXED
+                  formatOptionLabel={({ data }) => renderPlanOption(data)}
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      backgroundColor: "white",
+                      border: "none",
+                      borderBottom: errors.selectedPlan
+                        ? "2px solid #ef4444"
+                        : "2px dotted #000",
+                      borderRadius: 0,
+                      boxShadow: "none",
+                      minHeight: "44px",
+                    }),
+                    menu: (base) => ({ ...base, zIndex: 9999 }),
+                  }}
+                />
+
+                {errors.selectedPlan && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.selectedPlan}
+                  </p>
+                )}
+
+                {/* Selected Plan Benefits Preview */}
+                {showPlanBenefits && selectedPlan && (
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="font-semibold text-blue-900">
+                        {selectedPlan.name} Plan Details
+                      </h4>
+                      <span className="font-bold text-blue-700">
+                        {formatCurrency(selectedPlan.amount)}
+                        {selectedPlan.durationInDays
+                          ? ` / ${selectedPlan.durationInDays} days`
+                          : " / Lifetime"}
+                      </span>
+                    </div>
+
+                    {selectedPlan.description && (
+                      <p className="text-gray-700 mb-3">
+                        {selectedPlan.description}
+                      </p>
+                    )}
+
+                    {selectedPlanBenefits.length > 0 && (
+                      <div>
+                        <h5 className="font-medium text-gray-800 mb-2">
+                          Benefits Included:
+                        </h5>
+                        <ul className="space-y-1">
+                          {selectedPlanBenefits.map((benefit, index) => (
+                            <li key={index} className="flex items-start">
+                              <span className="text-green-600 mr-2">✓</span>
+                              <span className="text-gray-700">
+                                {benefit.title}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* MEMBERSHIP AMOUNT (Auto-filled) */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <span className="md:w-1/3">8. MEMBERSHIP AMOUNT</span>
+              <div className="flex-1">
+                <input
+                  type="text"
+                  value={
+                    typeof membershipAmount === "number"
+                      ? formatCurrency(membershipAmount)
+                      : ""
+                  }
+                  readOnly
+                  className="w-full border-b-2 border-dotted px-2 bg-gray-50"
+                />
+
+                <p className="text-sm text-gray-500 mt-1">
+                  Amount will be auto-filled based on selected plan
+                </p>
+              </div>
+            </div>
+
             {/* MAJOR COMMODITY */}
             <div className="flex flex-col gap-2">
-              <span>7. MAJOR COMMODITY</span>
+              <span>9. MAJOR COMMODITY</span>
               <input
                 value={majorCommodities[0]}
                 onChange={(e) => {
@@ -525,13 +827,7 @@ const MembershipRegistration = () => {
 
             {/* GST */}
             <div className="flex flex-col md:flex-row gap-4">
-              <span className="md:w-1/3">8. GST NO</span>
-              {/* <input
-                value={gstNumber}
-                onChange={(e) => setGstNumber(e.target.value)}
-                maxLength={15}
-                className="border h-10 px-2 uppercase"
-              /> */}
+              <span className="md:w-1/3">10. GST NO</span>
               <input
                 value={gstNumber}
                 onChange={(e) => {
@@ -547,13 +843,7 @@ const MembershipRegistration = () => {
 
             {/* EMAIL */}
             <div className="flex flex-col md:flex-row gap-4">
-              <span className="md:w-1/3">9. EMAIL</span>
-              {/* <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="border h-10 px-2 flex-1"
-              /> */}
+              <span className="md:w-1/3">11. EMAIL</span>
               <input
                 type="email"
                 value={email}
@@ -569,7 +859,7 @@ const MembershipRegistration = () => {
 
             {referrerId && referrerCompany && (
               <div className="flex flex-col md:flex-row gap-4">
-                <span className="md:w-1/3">10. REFERRED BY</span>
+                <span className="md:w-1/3">12. REFERRED BY</span>
                 <input
                   value={`${referrerCompany}`}
                   readOnly
@@ -580,7 +870,7 @@ const MembershipRegistration = () => {
 
             {/* BANK DETAILS */}
             <div className="flex flex-col gap-6">
-              <span>11. BANK DETAILS (FOR MONEY BACK OFFER)</span>
+              <span>13. BANK DETAILS (FOR MONEY BACK OFFER)</span>
 
               <div className="flex flex-col md:flex-row gap-4">
                 <span className="md:w-1/3">BANK NAME</span>
