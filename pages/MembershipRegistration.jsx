@@ -37,6 +37,17 @@ const MembershipRegistration = () => {
   const [businessType, setBusinessType] = useState([]);
   const [categoryLoading, setCategoryLoading] = useState(false);
 
+  const [businessNature, setBusinessNature] = useState({
+    manufacturer: {
+      isManufacturer: false,
+      scale: [],
+    },
+    trader: {
+      isTrader: false,
+      type: [],
+    },
+  });
+
   const [bankName, setBankName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
   const [ifscCode, setIfscCode] = useState("");
@@ -176,6 +187,32 @@ const MembershipRegistration = () => {
     );
   };
 
+  const toggleManufacturerScale = (value) => {
+    setBusinessNature((prev) => {
+      const scale = prev.manufacturer.scale.includes(value)
+        ? prev.manufacturer.scale.filter((v) => v !== value)
+        : [...prev.manufacturer.scale, value];
+
+      return {
+        ...prev,
+        manufacturer: { ...prev.manufacturer, scale },
+      };
+    });
+  };
+
+  const toggleTraderType = (value) => {
+    setBusinessNature((prev) => {
+      const type = prev.trader.type.includes(value)
+        ? prev.trader.type.filter((v) => v !== value)
+        : [...prev.trader.type, value];
+
+      return {
+        ...prev,
+        trader: { ...prev.trader, type },
+      };
+    });
+  };
+
   /* =========================
      MEMBERSHIP PLAN HANDLERS
   ========================= */
@@ -248,6 +285,26 @@ const MembershipRegistration = () => {
   const validateForm = () => {
     const newErrors = {};
 
+    /* =========================
+   BUSINESS NATURE VALIDATION
+========================= */
+    const isManufacturer = businessNature.manufacturer.isManufacturer;
+    const isTrader = businessNature.trader.isTrader;
+
+    if (!isManufacturer && !isTrader) {
+      newErrors.businessNature = "Please select Manufacturer and/or Trader";
+    }
+
+    if (isManufacturer && businessNature.manufacturer.scale.length === 0) {
+      newErrors.businessNature =
+        "Please select Manufacturer type (Large / MSME)";
+    }
+
+    if (isTrader && businessNature.trader.type.length === 0) {
+      newErrors.businessNature =
+        "Please select Trader type (Wholesale / Retail)";
+    }
+
     if (!companyName.trim()) newErrors.companyName = "Company Name is required";
     if (!proprietors.trim())
       newErrors.proprietors = "Proprietor / Partner name is required";
@@ -269,8 +326,8 @@ const MembershipRegistration = () => {
     if (!businessCategory)
       newErrors.businessCategory = "Business category is required";
 
-    if (!businessType.length)
-      newErrors.businessType = "Business type is required";
+    // if (!businessType.length)
+    //   newErrors.businessType = "Business type is required";
 
     if (!selectedPlan)
       newErrors.selectedPlan = "Please select a membership plan";
@@ -392,6 +449,18 @@ const MembershipRegistration = () => {
     setBusinessType([]);
     setMajorCommodities(["", ""]);
 
+    //reset business nature
+    setBusinessNature({
+      manufacturer: {
+        isManufacturer: false,
+        scale: [],
+      },
+      trader: {
+        isTrader: false,
+        type: [],
+      },
+    });
+
     //bank
     setBankName("");
     setAccountNumber("");
@@ -437,6 +506,7 @@ const MembershipRegistration = () => {
         email,
         businessCategory,
         businessType,
+        businessNature,
         majorCommodities: majorCommodities.filter(Boolean),
         gstNumber,
         bankDetails:
@@ -481,7 +551,6 @@ const MembershipRegistration = () => {
             "Payment successful .Your membership will be activated shortly."
           );
           resetForm();
-
           navigate("/membership-registration", { replace: true });
         },
 
@@ -500,7 +569,7 @@ const MembershipRegistration = () => {
       razorpay.open();
     } catch (err) {
       console.log("Payment error:", err);
-      toast.error(err?.message || "Payment failed");
+      toast.error(err || "Payment failed");
     } finally {
       setLoading(false);
     }
@@ -641,37 +710,8 @@ const MembershipRegistration = () => {
               />
             </div>
 
-            {/* BUSINESS CATEGORY */}
-            <div className="flex flex-col md:flex-row gap-4">
-              <span className="md:w-1/3">5. BUSINESS CATEGORY</span>
-              <div className="flex-1">
-                <Select
-                  options={categoryOptions}
-                  isLoading={categoryLoading}
-                  placeholder="Search & select category"
-                  value={selectedCategoryOptions}
-                  onChange={(opt) => {
-                    setBusinessCategory(opt ? opt.value : "");
-                    setErrors((prev) => ({ ...prev, businessCategory: null }));
-                  }}
-                  styles={{
-                    control: (base, state) => ({
-                      ...base,
-                      backgroundColor: "white",
-                      border: "none",
-                      borderBottom: errors.businessCategory
-                        ? "2px solid #ef4444"
-                        : "2px dotted #000",
-                      borderRadius: 0,
-                      boxShadow: "none",
-                    }),
-                  }}
-                />
-              </div>
-            </div>
-
             {/* BUSINESS TYPE */}
-            <div
+            {/* <div
               className={`flex flex-col md:flex-row gap-8 ${
                 errors.businessType ? "border border-red-500 p-3 rounded" : ""
               }`}
@@ -700,6 +740,125 @@ const MembershipRegistration = () => {
                 />{" "}
                 RETAIL
               </label>
+            </div> */}
+            {/* BUSINESS NATURE */}
+            <div className="flex flex-col gap-6">
+              <span className="font-bold">5. BUSINESS NATURE</span>
+
+              {/* Manufacturer */}
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={businessNature.manufacturer.isManufacturer}
+                  onChange={(e) =>
+                    setBusinessNature((prev) => ({
+                      ...prev,
+                      manufacturer: {
+                        ...prev.manufacturer,
+                        isManufacturer: e.target.checked,
+                        scale: [],
+                      },
+                    }))
+                  }
+                />
+                MANUFACTURER
+              </label>
+
+              {businessNature.manufacturer.isManufacturer && (
+                <div className="ml-6 flex gap-6">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={businessNature.manufacturer.scale.includes(
+                        "LARGE"
+                      )}
+                      onChange={() => toggleManufacturerScale("LARGE")}
+                    />{" "}
+                    LARGE
+                  </label>
+
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={businessNature.manufacturer.scale.includes(
+                        "MSME"
+                      )}
+                      onChange={() => toggleManufacturerScale("MSME")}
+                    />{" "}
+                    MSME
+                  </label>
+                </div>
+              )}
+
+              {/* Trader */}
+              <label className="flex items-center gap-2 mt-4">
+                <input
+                  type="checkbox"
+                  checked={businessNature.trader.isTrader}
+                  onChange={(e) =>
+                    setBusinessNature((prev) => ({
+                      ...prev,
+                      trader: {
+                        ...prev.trader,
+                        isTrader: e.target.checked,
+                        type: [],
+                      },
+                    }))
+                  }
+                />
+                TRADER
+              </label>
+
+              {businessNature.trader.isTrader && (
+                <div className="ml-6 flex gap-6">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={businessNature.trader.type.includes("WHOLESALE")}
+                      onChange={() => toggleTraderType("WHOLESALE")}
+                    />{" "}
+                    WHOLESALE
+                  </label>
+
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={businessNature.trader.type.includes("RETAIL")}
+                      onChange={() => toggleTraderType("RETAIL")}
+                    />{" "}
+                    RETAIL
+                  </label>
+                </div>
+              )}
+            </div>
+
+            {/* BUSINESS CATEGORY */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <span className="md:w-1/3">6. BUSINESS CATEGORY</span>
+              <div className="flex-1">
+                <Select
+                  options={categoryOptions}
+                  isLoading={categoryLoading}
+                  placeholder="Search & select category"
+                  value={selectedCategoryOptions}
+                  onChange={(opt) => {
+                    setBusinessCategory(opt ? opt.value : "");
+                    setErrors((prev) => ({ ...prev, businessCategory: null }));
+                  }}
+                  styles={{
+                    control: (base, state) => ({
+                      ...base,
+                      backgroundColor: "white",
+                      border: "none",
+                      borderBottom: errors.businessCategory
+                        ? "2px solid #ef4444"
+                        : "2px dotted #000",
+                      borderRadius: 0,
+                      boxShadow: "none",
+                    }),
+                  }}
+                />
+              </div>
             </div>
 
             {/* MEMBERSHIP PLAN SELECTION */}
