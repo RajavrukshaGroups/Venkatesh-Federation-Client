@@ -368,67 +368,6 @@ const MembershipRegistration = () => {
     return null;
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   if (loading) return;
-
-  //   const error = validateForm();
-  //   if (error) {
-  //     toast.error(error);
-  //     return;
-  //   }
-
-  //   try {
-  //     setLoading(true);
-
-  //     const payload = {
-  //       companyName,
-  //       proprietors,
-  //       address: {
-  //         street,
-  //         pin,
-  //         state,
-  //         district,
-  //         taluk,
-  //       },
-  //       mobileNumber,
-  //       email,
-  //       businessCategory,
-  //       businessType,
-  //       majorCommodities: majorCommodities.filter(Boolean),
-  //       gstNumber,
-
-  //       // Membership details
-  //       membershipPlan: selectedPlan._id,
-  //       membershipPlanName: selectedPlan.name,
-  //       membershipAmount: selectedPlan.amount,
-  //       membershipDuration: selectedPlan.durationInDays,
-
-  //       //bank details
-  //       bankName,
-  //       accountNumber,
-  //       ifscCode,
-
-  //       //referral info
-  //       referredByUserId: referrerId || null,
-  //     };
-
-  //     const res = await api.post("/users/create-user", payload);
-
-  //     if (res.success) {
-  //       toast.success("Member registered successfully 🎉");
-
-  //       setTimeout(() => {
-  //         window.location.reload();
-  //       }, 3000);
-  //     }
-  //   } catch (err) {
-  //     console.log("error response", err);
-  //     toast.error(err || "Submission failed");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
   const resetForm = () => {
     //address
     setPin("");
