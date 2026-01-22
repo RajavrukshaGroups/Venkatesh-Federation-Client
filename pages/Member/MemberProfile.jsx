@@ -1,11 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Mail, Building, Key, Shield, Calendar } from "lucide-react";
+import {
+  User,
+  Mail,
+  Building,
+  Key,
+  Shield,
+  Calendar,
+  File,
+} from "lucide-react";
 
 export default function MemberProfile() {
   const navigate = useNavigate();
   const [member, setMember] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const handleViewCertificate = (member) => {
+    console.log("member info", member);
+    window.open(
+      `http://localhost:8000/member/auth/user/certificate/${member?._id}`,
+      "_blank",
+    );
+  };
 
   useEffect(() => {
     const fetchMemberData = () => {
@@ -100,6 +116,20 @@ export default function MemberProfile() {
                   icon={<Calendar className="h-5 w-5" />}
                   label="Account Status"
                   value="Active"
+                  badge="active"
+                  className="bg-green-50"
+                />
+                <ProfileItem
+                  icon={<File className="h-5 w-5" />}
+                  label="Certificate"
+                  value={
+                    <button
+                      onClick={() => handleViewCertificate(member)}
+                      className="text-blue-600 hover:underline font-medium"
+                    >
+                      View Certificate
+                    </button>
+                  }
                   badge="active"
                   className="bg-green-50"
                 />
