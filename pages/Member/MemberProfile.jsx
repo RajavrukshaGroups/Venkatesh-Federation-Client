@@ -15,12 +15,23 @@ export default function MemberProfile() {
   const [member, setMember] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const referralLink = `http://localhost:3000/membership-registration/${member?.userId}`;
+
   const handleViewCertificate = (member) => {
     console.log("member info", member);
     window.open(
       `http://localhost:8000/member/auth/user/certificate/${member?._id}`,
       "_blank",
     );
+  };
+
+  const handleCopyReferralLink = async () => {
+    try {
+      await navigator.clipboard.writeText(referralLink);
+      alert("Referral link copied to clipboard!");
+    } catch (err) {
+      console.error("Failed to copy", err);
+    }
   };
 
   useEffect(() => {
@@ -129,6 +140,26 @@ export default function MemberProfile() {
                     >
                       View Certificate
                     </button>
+                  }
+                  badge="active"
+                  className="bg-green-50"
+                />
+                <ProfileItem
+                  icon={<File className="h-5 w-5" />}
+                  label="Referral Link"
+                  value={
+                    <div className="flex flex-col gap-2">
+                      <span className="text-sm text-gray-700 break-all">
+                        {referralLink}
+                      </span>
+
+                      <button
+                        onClick={handleCopyReferralLink}
+                        className="self-start text-blue-600 hover:underline font-medium"
+                      >
+                        Copy Referral Link
+                      </button>
+                    </div>
                   }
                   badge="active"
                   className="bg-green-50"
