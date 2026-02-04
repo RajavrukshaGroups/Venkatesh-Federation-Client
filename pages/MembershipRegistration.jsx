@@ -29,6 +29,9 @@ const MembershipRegistration = () => {
   const [gstNumber, setGstNumber] = useState("");
   const [majorCommodities, setMajorCommodities] = useState(["", ""]);
 
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [customCategoryName, setCustomCategoryName] = useState("");
+
   /* =========================
      BUSINESS STATES
   ========================= */
@@ -65,10 +68,17 @@ const MembershipRegistration = () => {
 
   const [errors, setErrors] = useState({});
 
-  const categoryOptions = categories.map((cat) => ({
-    value: cat._id,
-    label: cat.name,
-  }));
+  // const categoryOptions = categories.map((cat) => ({
+  //   value: cat._id,
+  //   label: cat.name,
+  // }));
+  const categoryOptions = [
+    ...categories.map((cat) => ({
+      value: cat._id,
+      label: cat.name,
+    })),
+    { value: "__CUSTOM__", label: "+ Add new business category" },
+  ];
 
   const selectedCategoryOptions =
     categoryOptions.find((opt) => opt.value === businessCategory) || null;
@@ -98,7 +108,7 @@ const MembershipRegistration = () => {
       try {
         setPlanLoading(true);
         const response = await api.get(
-          "/admin/businessplans/view-membershipplans/regform"
+          "/admin/businessplans/view-membershipplans/regform",
         );
         console.log("response", response);
         if (response.success) {
@@ -151,7 +161,7 @@ const MembershipRegistration = () => {
     try {
       setPinLoading(true);
       const res = await fetch(
-        `https://api.postalpincode.in/pincode/${pincode}`
+        `https://api.postalpincode.in/pincode/${pincode}`,
       );
       const data = await res.json();
 
@@ -183,7 +193,7 @@ const MembershipRegistration = () => {
   ========================= */
   const toggleBusinessType = (type) => {
     setBusinessType((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
     );
   };
 
@@ -275,7 +285,7 @@ const MembershipRegistration = () => {
   }));
 
   const selectedPlanOption = planOptions.find(
-    (opt) => opt.value === selectedPlan?._id
+    (opt) => opt.value === selectedPlan?._id,
   );
 
   /* =========================
@@ -323,8 +333,12 @@ const MembershipRegistration = () => {
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       newErrors.email = "Invalid email address";
 
-    if (!businessCategory)
+    // if (!businessCategory)
+    //   newErrors.businessCategory = "Business category is required";
+
+    if (!businessCategory && !customCategoryName.trim()) {
       newErrors.businessCategory = "Business category is required";
+    }
 
     // if (!businessType.length)
     //   newErrors.businessType = "Business type is required";
@@ -411,6 +425,9 @@ const MembershipRegistration = () => {
     setShowPlanBenefits("");
     setSelectedPlanBenefits("");
 
+    setIsCustomCategory(false);
+    setCustomCategoryName("");
+
     //errors
     setErrors({});
   };
@@ -443,7 +460,11 @@ const MembershipRegistration = () => {
         },
         mobileNumber,
         email,
+        // businessCategory,
         businessCategory,
+        customBusinessCategory: isCustomCategory
+          ? customCategoryName.trim().toUpperCase()
+          : null,
         businessType,
         businessNature,
         majorCommodities: majorCommodities.filter(Boolean),
@@ -481,13 +502,13 @@ const MembershipRegistration = () => {
         key: orderRes.key,
         amount: orderRes.amount * 100,
         currency: "INR",
-        name: "Federation of Trade and Industry of India",
+        name: "All India Trade and Industries Forum",
         description: selectedPlan.name + " Membership",
         order_id: orderRes.orderId,
 
         handler: function () {
           toast.success(
-            "Payment successful .Your membership will be activated shortly."
+            "Payment successful .Your membership will be activated shortly.",
           );
           resetForm();
           navigate("/membership-registration", { replace: true });
@@ -522,14 +543,18 @@ const MembershipRegistration = () => {
         {/* HEADER */}
         <div className="bg-[#ED1C24] text-white p-6 text-center">
           <h1 className="text-3xl md:text-5xl font-black uppercase">
-            Federation of Trade and Industry of India
+            {/* Federation of Trade and Industry of India */}
+            All India Trade and Industries Forum
           </h1>
-          <p className="font-bold text-yellow-300 mt-2">(Karnataka Chapter)</p>
+          {/* <p className="font-bold text-yellow-300 mt-2">(Karnataka Chapter)</p> */}
         </div>
 
         {/* TITLE */}
         <div className="relative -mt-6 text-center mb-12">
-          <span className="bg-[#0054A6] text-white font-bold text-xl px-10 py-3 rounded-full border-4 border-white">
+          <span
+            className="bg-[#0054A6] text-white font-bold text-xl px-10 py-3 rounded-full border-4 border-white"
+            style={{ lineHeight: "4rem" }}
+          >
             Membership Application Form
           </span>
         </div>
@@ -709,7 +734,7 @@ const MembershipRegistration = () => {
                     <input
                       type="checkbox"
                       checked={businessNature.manufacturer.scale.includes(
-                        "LARGE"
+                        "LARGE",
                       )}
                       onChange={() => toggleManufacturerScale("LARGE")}
                     />{" "}
@@ -720,7 +745,7 @@ const MembershipRegistration = () => {
                     <input
                       type="checkbox"
                       checked={businessNature.manufacturer.scale.includes(
-                        "MSME"
+                        "MSME",
                       )}
                       onChange={() => toggleManufacturerScale("MSME")}
                     />{" "}
@@ -775,7 +800,7 @@ const MembershipRegistration = () => {
             <div className="flex flex-col md:flex-row gap-4">
               <span className="md:w-1/3">6. BUSINESS CATEGORY</span>
               <div className="flex-1">
-                <Select
+                {/* <Select
                   options={categoryOptions}
                   isLoading={categoryLoading}
                   placeholder="Search & select category"
@@ -796,7 +821,52 @@ const MembershipRegistration = () => {
                       boxShadow: "none",
                     }),
                   }}
+                /> */}
+                <Select
+                  options={categoryOptions}
+                  isLoading={categoryLoading}
+                  placeholder="Search & select category"
+                  value={
+                    isCustomCategory
+                      ? {
+                          value: "__CUSTOM__",
+                          label: "+ Add new business category",
+                        }
+                      : selectedCategoryOptions
+                  }
+                  onChange={(opt) => {
+                    if (opt?.value === "__CUSTOM__") {
+                      setIsCustomCategory(true);
+                      setBusinessCategory("");
+                    } else {
+                      setIsCustomCategory(false);
+                      setCustomCategoryName("");
+                      setBusinessCategory(opt.value);
+                    }
+                    setErrors((prev) => ({ ...prev, businessCategory: null }));
+                  }}
                 />
+                {isCustomCategory && (
+                  <div className="mt-2">
+                    <input
+                      type="text"
+                      placeholder="Enter your business category"
+                      value={customCategoryName}
+                      onChange={(e) => {
+                        setCustomCategoryName(e.target.value);
+                        setErrors((prev) => ({
+                          ...prev,
+                          businessCategory: null,
+                        }));
+                      }}
+                      className={`w-full border-b-2 px-2 uppercase ${
+                        errors.businessCategory
+                          ? "border-red-500"
+                          : "border-dotted"
+                      }`}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 

@@ -13,8 +13,13 @@ import {
   ChevronDown,
   ChevronRight,
   MessageCircle,
+  Building,
   Check,
+  LinkIcon,
+  Target,
+  Phone,
 } from "lucide-react";
+import forumLogo from "../assets/AITIF_new_logo.png";
 
 const Navbar = () => {
   const member = JSON.parse(localStorage.getItem("member"));
@@ -37,65 +42,64 @@ const Navbar = () => {
     {
       name: "Membership",
       path: "/membership",
-      children: [
-        { name: "FTII Council", path: "/team?tab=council" },
-        { name: "Office Bearers In States", path: "/team?tab=office_bearers" },
-        { name: "State Presidents", path: "/team?tab=state_presidents" },
-        { name: "Honorary Consultants", path: "/team?tab=consultants" },
-        { name: "FTII Patrons", path: "/team?tab=patrons" },
-        { name: "National Vice-Presidents", path: "/team?tab=vice_presidents" },
-        { name: "Advisory Committee", path: "/team?tab=advisory" },
-        { name: "National Secretary", path: "/team?tab=secretary" },
-        { name: "Convener", path: "/team?tab=convener" },
-      ],
+      // children: [
+      //   { name: "FTII Council", path: "/team?tab=council" },
+      //   { name: "Office Bearers In States", path: "/team?tab=office_bearers" },
+      //   { name: "State Presidents", path: "/team?tab=state_presidents" },
+      //   { name: "Honorary Consultants", path: "/team?tab=consultants" },
+      //   { name: "FTII Patrons", path: "/team?tab=patrons" },
+      //   { name: "National Vice-Presidents", path: "/team?tab=vice_presidents" },
+      //   { name: "Advisory Committee", path: "/team?tab=advisory" },
+      //   { name: "National Secretary", path: "/team?tab=secretary" },
+      //   { name: "Convener", path: "/team?tab=convener" },
+      // ],
     },
+    { name: "Services", path: "/services" },
     {
       name: "International Forum",
       path: "/international",
-      children: [
-        {
-          name: "International Director",
-          path: "/team?tab=international_director",
-        },
-        {
-          name: "Chairman Int. Council",
-          path: "/team?tab=international_chairman",
-        },
-      ],
+      // children: [
+      //   {
+      //     name: "International Director",
+      //     path: "/team?tab=international_director",
+      //   },
+      //   {
+      //     name: "Chairman Int. Council",
+      //     path: "/team?tab=international_chairman",
+      //   },
+      // ],
     },
     // { name: "Opinionator", path: "/opinionator" },
-    {
-      name: "YLF",
-      path: "/ylf",
-      children: [
-        { name: "Odisha", path: "/team?tab=ylf_odisha" },
-        { name: "Jammu and Kashmir", path: "/team?tab=ylf_jk" },
-      ],
-    },
-    {
-      name: "EWEF",
-      path: "/ewef",
-      children: [
-        { name: "Chair Persons of EWEF", path: "/team?tab=ewef_chairpersons" },
-      ],
-    },
-    {
-      name: "Media Room",
-      path: "/media",
-      children: [
-        { name: "Magazine Vyapar Trends", path: "/media?tab=magazine" },
-        { name: "Gallery", path: "/media?tab=gallery" },
-        { name: "Blog", path: "/media?tab=blog" },
-      ],
-    },
+    // {
+    //   name: "YLF",
+    //   path: "/ylf",
+    //   children: [
+    //     { name: "Odisha", path: "/team?tab=ylf_odisha" },
+    //     { name: "Jammu and Kashmir", path: "/team?tab=ylf_jk" },
+    //   ],
+    // },
+    // {
+    //   name: "EWEF",
+    //   path: "/ewef",
+    //   children: [
+    //     { name: "Chair Persons of EWEF", path: "/team?tab=ewef_chairpersons" },
+    //   ],
+    // },
+    // {
+    //   name: "Media Room",
+    //   path: "/media",
+    //   children: [
+    //     { name: "Magazine Vyapar Trends", path: "/media?tab=magazine" },
+    //     { name: "Gallery", path: "/media?tab=gallery" },
+    //     { name: "Blog", path: "/media?tab=blog" },
+    //   ],
+    // },
     // { name: "Products Promotional", path: "/products" },
     { name: "Contact Us", path: "/contact" },
   ];
 
   const headerClass = `fixed w-full z-50 transition-all duration-300 ${
-    isScrolled
-      ? "bg-white shadow-md py-2 text-navy-900"
-      : "bg-white shadow-sm py-4 text-navy-900"
+    isScrolled ? "bg-white shadow-md py-1" : "bg-white shadow-sm py-1"
   }`;
 
   const toggleSubmenu = (name) => {
@@ -108,29 +112,35 @@ const Navbar = () => {
 
   return (
     <header className={headerClass}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           <Link
             to="/"
             className="flex items-center space-x-3 relative z-50 group"
           >
-            <div className="w-12 h-12 relative flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full border-2 border-red-600 animate-spin-slow opacity-20"></div>
-              <div className="w-10 h-10 bg-white rounded-full border border-blue-800 flex items-center justify-center text-blue-900 font-serif font-bold text-lg shadow-sm z-10">
-                <span className="text-red-600">F</span>TII
-              </div>
+            <div className="w-25 h-25 flex items-center justify-center">
+              <img
+                src={forumLogo}
+                alt="AITIF Logo"
+                className="w-20 h-20 object-contain"
+              />
             </div>
           </Link>
 
-          <nav className="hidden xl:flex space-x-6 items-center">
+          <nav className="hidden xl:flex space-x-8 items-center">
             {navLinks.map((link) => (
               <div key={link.name} className="relative group h-full py-2">
                 <Link
                   to={link.path}
-                  className={`flex items-center text-sm font-bold tracking-tight transition-colors ${
+                  // className={`flex items-center text-base font-semibold tracking-wide transition-colors ${
+                  //   location.pathname === link.path
+                  //     ? "text-blue-700 border-b-2 border-blue-700 pb-0.5"
+                  //     : "text-navy-900 hover:text-blue-700"
+                  // }`}
+                  className={`flex items-center text-[17px] font-serif font-bold tracking-widest uppercase transition-colors ${
                     location.pathname === link.path
-                      ? "text-blue-700 border-b-2 border-blue-700 pb-0.5"
-                      : "text-navy-900 hover:text-blue-700"
+                      ? "text-blue-800 border-b-2 border-blue-800 pb-1"
+                      : "text-slate-900 hover:text-blue-800"
                   }`}
                 >
                   {link.name}
@@ -215,6 +225,130 @@ const Navbar = () => {
               className="text-navy-900"
             >
               {isOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          </div>
+        </div>
+      </div> */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center">
+          <Link
+            to="/"
+            className="flex items-center space-x-3 relative z-50 group"
+          >
+            {/* Increased Logo Size */}
+            <div className="w-32 h-32 flex items-center justify-center">
+              <img
+                src={forumLogo}
+                alt="AITIF Logo"
+                className="w-28 h-28 object-contain" // Increased from w-20 h-20 to w-28 h-28
+              />
+            </div>
+
+            {/* Optional: Add Organization Name next to Logo on larger screens */}
+            {/* <div className="hidden lg:block">
+              <div className="text-xl font-bold text-blue-900 leading-tight">
+                All India Trade & Industries Forum
+              </div>
+              <div className="text-xs text-gray-600 font-medium">
+                Empowering Trade, Strengthening Industry
+              </div>
+            </div> */}
+          </Link>
+
+          <nav className="hidden xl:flex space-x-10 items-center">
+            {" "}
+            {/* Increased space-x from 8 to 10 */}
+            {navLinks.map((link) => (
+              <div key={link.name} className="relative group h-full py-2">
+                <Link
+                  to={link.path}
+                  className={`flex items-center text-[17px] font-serif font-bold tracking-widest uppercase transition-colors ${
+                    location.pathname === link.path
+                      ? "text-blue-800 border-b-2 border-blue-800 pb-1"
+                      : "text-slate-900 hover:text-blue-800"
+                  }`}
+                >
+                  {link.name}
+                  {link.children && (
+                    <ChevronDown
+                      size={14}
+                      className="ml-1 group-hover:rotate-180 transition-transform duration-300"
+                    />
+                  )}
+                </Link>
+
+                {link.children && (
+                  <div className="absolute left-0 top-full pt-4 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
+                    <div className="bg-white shadow-xl border-t-2 border-blue-700 rounded-b-sm py-1 flex flex-col">
+                      {link.children.map((child) => (
+                        <Link
+                          key={child.name}
+                          to={child.path}
+                          className="px-5 py-3 text-xs font-semibold text-navy-800 hover:bg-gray-50 hover:text-blue-700 border-b border-gray-100 last:border-0 uppercase tracking-wider transition-colors flex items-center justify-between group/item"
+                        >
+                          {child.name}
+                          <ChevronRight
+                            size={12}
+                            className="opacity-0 group-hover/item:opacity-100 transition-opacity text-blue-600"
+                          />
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+            {!isMemberLoggedIn && (
+              <Link
+                to="/member/login"
+                className="ml-6 px-5 py-2.5 rounded-lg bg-blue-700 text-white text-sm font-bold hover:bg-blue-800 shadow-md hover:shadow-lg transition-all"
+              >
+                Member Login
+              </Link>
+            )}
+            {isMemberLoggedIn && (
+              <div className="flex items-center gap-4 ml-6">
+                {/* <Link
+                  to="/member/notifications"
+                  className="text-sm font-bold text-navy-900 hover:text-blue-700 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
+                >
+                  Notifications
+                </Link> */}
+
+                {/* <Link
+                  to="/member/blogs"
+                  className="text-sm font-bold text-navy-900 hover:text-blue-700 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
+                >
+                  Blogs
+                </Link> */}
+
+                <Link
+                  to="/member/profile"
+                  className="text-sm font-bold text-navy-900 hover:text-blue-700 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
+                >
+                  Profile
+                </Link>
+
+                <button
+                  onClick={() => {
+                    localStorage.removeItem("member");
+                    localStorage.removeItem("memberToken");
+                    window.location.href = "/";
+                  }}
+                  className="text-sm font-bold text-red-600 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </nav>
+
+          <div className="xl:hidden relative z-50">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-navy-900 p-2"
+            >
+              {isOpen ? <X size={32} /> : <Menu size={32} />}
             </button>
           </div>
         </div>
@@ -309,46 +443,61 @@ const Footer = () => {
     <footer className="bg-white border-t border-gray-200 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* About Us Column */}
           <div className="space-y-6">
-            <h3 className="text-xl font-bold text-blue-700 font-sans">
-              About Us
-            </h3>
-            <div className="flex flex-col items-start gap-4">
-              <div className="w-24 h-24 relative flex-shrink-0">
-                <div className="w-full h-full rounded-full border-4 border-blue-600 flex items-center justify-center relative bg-white">
-                  <div className="absolute inset-1 border border-dashed border-red-500 rounded-full animate-spin-slow opacity-50"></div>
-                  <span className="font-serif font-bold text-3xl text-red-600">
-                    FTII
-                  </span>
-                </div>
+            {/* <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Building className="w-6 h-6 text-blue-700" />
               </div>
-              <p className="text-slate-700 text-sm leading-relaxed font-bold text-justify">
-                The Federation of Trade and Industry of India (FTII) is a
-                national organization that serves as the voice of India’s Trade
-                and Industry.
+              <h3 className="text-xl font-bold text-blue-700 font-sans">
+                About Us
+              </h3>
+            </div> */}
+            <div className="space-y-4">
+              <div className="w-36 h-24 flex items-center justify-center">
+                <img
+                  src={forumLogo}
+                  alt="AITIF Logo"
+                  className="w-full h-auto object-contain"
+                />
+              </div>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                <span className="font-semibold">
+                  All India Trade and Industries Forum
+                </span>
+                <br></br>
+                is the premier national platform representing India's trade and
+                industry ecosystem through advocacy, empowerment, and strategic
+                partnerships.
               </p>
             </div>
           </div>
 
+          {/* Quick Links Column */}
           <div className="space-y-6">
-            <h3 className="text-xl font-bold text-blue-700 font-sans">
-              Useful Links
-            </h3>
-            <ul className="space-y-4">
+            <div className="flex items-center gap-3 mb-4">
+              {/* <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                <LinkIcon className="w-6 h-6 text-red-700" />
+              </div> */}
+              <h3 className="text-xl font-bold text-blue-700 font-sans">
+                Quick Links
+              </h3>
+            </div>
+            <ul className="space-y-3">
               {[
                 { name: "Home", path: "/" },
                 { name: "About Us", path: "/about" },
-                // { name: "Opinionator", path: "/opinionator" },
+                { name: "Services", path: "/services" },
+                { name: "Membership", path: "/membership" },
                 { name: "Contact Us", path: "/contact" },
               ].map((link, i) => (
                 <li key={i}>
-                  <Link to={link.path} className="flex items-center group">
-                    <div className="w-5 h-5 flex items-center justify-center mr-3">
-                      <div className="w-4 h-4 rounded-full border-2 border-red-600 flex items-center justify-center">
-                        <div className="w-1.5 h-1.5 bg-red-600 rounded-full"></div>
-                      </div>
-                    </div>
-                    <span className="text-slate-600 hover:text-blue-700 font-bold text-sm transition-colors">
+                  <Link
+                    to={link.path}
+                    className="flex items-center gap-3 group hover:translate-x-1 transition-transform duration-200"
+                  >
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                    <span className="text-slate-700 hover:text-blue-700 font-medium text-sm transition-colors">
                       {link.name}
                     </span>
                   </Link>
@@ -357,25 +506,31 @@ const Footer = () => {
             </ul>
           </div>
 
+          {/* Our Initiatives Column */}
           <div className="space-y-6">
-            <h3 className="text-xl font-bold text-blue-700 font-sans">
-              Useful Resources
-            </h3>
-            <ul className="space-y-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <Target className="w-6 h-6 text-green-700" />
+              </div>
+              <h3 className="text-xl font-bold text-blue-700 font-sans">
+                Our Initiatives
+              </h3>
+            </div>
+            <ul className="space-y-3">
               {[
-                { name: "Membership", path: "/membership" },
                 { name: "International Forum", path: "/international" },
-                { name: "YLF", path: "/ylf" },
-                { name: "EWEF", path: "/ewef" },
+                // { name: "Youth Leadership Forum (YLF)", path: "/ylf" },
+                // { name: "Empowered Women Forum (EWEF)", path: "/ewef" },
+                // { name: "Media Room", path: "/media" },
+                // { name: "Trade Awareness Programs", path: "/awareness" },
               ].map((link, i) => (
                 <li key={i}>
-                  <Link to={link.path} className="flex items-center group">
-                    <div className="w-5 h-5 flex items-center justify-center mr-3">
-                      <div className="w-4 h-4 rounded-full border-2 border-blue-700 flex items-center justify-center">
-                        <div className="w-1.5 h-1.5 bg-blue-700 rounded-full"></div>
-                      </div>
-                    </div>
-                    <span className="text-slate-600 hover:text-blue-700 font-bold text-sm transition-colors">
+                  <Link
+                    to={link.path}
+                    className="flex items-center gap-3 group hover:translate-x-1 transition-transform duration-200"
+                  >
+                    <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+                    <span className="text-slate-700 hover:text-blue-700 font-medium text-sm transition-colors">
                       {link.name}
                     </span>
                   </Link>
@@ -384,53 +539,134 @@ const Footer = () => {
             </ul>
           </div>
 
+          {/* Contact Info Column */}
           <div className="space-y-6">
-            <h3 className="text-xl font-bold text-blue-700 font-sans">
-              Connect with Us
-            </h3>
-            <ul className="space-y-6">
-              <li className="flex items-center">
-                <div className="mr-3 shrink-0 text-red-500">
-                  <Mail size={22} />
+            <div className="flex items-center gap-3 mb-4">
+              {/* <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Mail className="w-6 h-6 text-purple-700" />
+              </div> */}
+              <h3 className="text-xl font-bold text-blue-700 font-sans">
+                Contact Info
+              </h3>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-4 h-4 text-blue-700" />
                 </div>
-                <span className="text-slate-900 font-bold text-sm">
-                  ftiiassociation@gmail.com
-                </span>
-              </li>
-              <li className="flex items-start">
-                <div className="mt-1 mr-3 shrink-0 text-red-500">
-                  <MapPin size={22} />
+                <div>
+                  <p className="font-semibold text-slate-800 text-sm">
+                    Head Office
+                  </p>
+                  <p className="text-slate-600 text-sm leading-relaxed">
+                    B- 1/67, Indira Chowk, near Nanital Bank,
+                    <br />
+                    New Kondli, Delhi-110096, India
+                  </p>
                 </div>
-                <span className="text-slate-900 font-bold text-sm leading-relaxed">
-                  B- 1/67, Indira Chowk, near Nanital Bank, New Kondli,
-                  Delhi-110096.
-                </span>
-              </li>
-            </ul>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-4 h-4 text-red-700" />
+                </div>
+                <div>
+                  <p className="text-slate-800 text-sm font-semibold">
+                    +91 98765 43210
+                  </p>
+                  <p className="text-slate-600 text-xs">Mon-Fri, 9AM-6PM</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-4 h-4 text-green-700" />
+                </div>
+                <div>
+                  <p className="text-slate-800 text-sm font-semibold">
+                    info@aitif.org
+                  </p>
+                  <p className="text-slate-600 text-xs">General Inquiries</p>
+                </div>
+              </div>
+
+              {/* Social Media */}
+              <div className="pt-4">
+                <p className="font-medium text-slate-700 text-sm mb-3">
+                  Follow Us
+                </p>
+                <div className="flex gap-3">
+                  <a
+                    href="#"
+                    className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-200 transition-colors"
+                    aria-label="Facebook"
+                  >
+                    <Facebook size={18} />
+                  </a>
+                  <a
+                    href="#"
+                    className="w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-sky-600 hover:bg-sky-200 transition-colors"
+                    aria-label="Twitter"
+                  >
+                    <Twitter size={18} />
+                  </a>
+                  <a
+                    href="#"
+                    className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center text-pink-600 hover:bg-pink-200 transition-colors"
+                    aria-label="Instagram"
+                  >
+                    <Instagram size={18} />
+                  </a>
+                  <a
+                    href="#"
+                    className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center text-blue-800 hover:bg-blue-300 transition-colors"
+                    aria-label="LinkedIn"
+                  >
+                    <Linkedin size={18} />
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-blue-900 py-4 border-t border-blue-800 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-xs opacity-80 font-medium">
-            © 2023 FTII | All Rights are Reserved
-          </p>
-          <div className="flex space-x-4 mt-2 md:mt-0">
-            <Facebook
-              size={18}
-              className="hover:text-gold-400 cursor-pointer"
-            />
-            <Twitter size={18} className="hover:text-gold-400 cursor-pointer" />
-            <Instagram
-              size={18}
-              className="hover:text-gold-400 cursor-pointer"
-            />
-            <Linkedin
-              size={18}
-              className="hover:text-gold-400 cursor-pointer"
-            />
-            <Youtube size={18} className="hover:text-gold-400 cursor-pointer" />
+      {/* Bottom Bar */}
+      <div className="bg-gradient-to-r from-blue-900 to-blue-800 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="text-center md:text-left">
+              <p className="text-white/90 text-xs md:text-sm">
+                © {new Date().getFullYear()} All India Trade and Industries
+                Forum (AITIF)
+              </p>
+              <p className="text-white/70 text-xs mt-1">
+                Empowering Trade • Strengthening Industry • Driving Growth
+              </p>
+            </div>
+
+            <div className="flex items-center gap-6">
+              <Link
+                to="/privacy-policy"
+                className="text-white/80 hover:text-white text-xs md:text-sm transition-colors"
+              >
+                Privacy Policy
+              </Link>
+              <div className="w-px h-4 bg-white/40"></div>
+              <Link
+                to="/terms"
+                className="text-white/80 hover:text-white text-xs md:text-sm transition-colors"
+              >
+                Terms of Use
+              </Link>
+              <div className="w-px h-4 bg-white/40"></div>
+              <Link
+                to="/sitemap"
+                className="text-white/80 hover:text-white text-xs md:text-sm transition-colors"
+              >
+                Sitemap
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -443,7 +679,7 @@ const Layout = ({ children }) => {
     <div className="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-800">
       <Navbar />
       <StickySidebar />
-      <main className="flex-grow pt-[72px]">{children}</main>
+      <main className="flex-grow pt-[96px]">{children}</main>
       <Footer />
     </div>
   );

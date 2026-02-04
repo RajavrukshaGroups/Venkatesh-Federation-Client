@@ -27,6 +27,7 @@ import MemberBlogs from "./pages/Member/MemberBlogs";
 import MemberProfile from "./pages/Member/MemberProfile";
 import MemberForgotPassword from "./pages/Member/MemberForgotPassword";
 import MemberResetPassword from "./pages/Member/MemberResetPassword";
+import Services from "./pages/Services";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -62,6 +63,7 @@ const App = () => {
           <Route path="/media" element={<Media />} />
           <Route path="/products" element={<Products />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/services" element={<Services />} />
           <Route
             path="/member/forgot-password"
             element={<MemberForgotPassword />}

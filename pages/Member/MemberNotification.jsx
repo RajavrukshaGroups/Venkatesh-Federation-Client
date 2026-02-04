@@ -33,7 +33,7 @@ const MemberNotification = () => {
   const fetchNotifications = async (pageNo = 1, append = false) => {
     try {
       const res = await api.get(
-        `/member/auth/user/notification/${member._id}?page=${pageNo}&limit=${LIMIT}`
+        `/member/auth/user/notification/${member._id}?page=${pageNo}&limit=${LIMIT}`,
       );
       console.log("response not", res);
 
@@ -42,7 +42,7 @@ const MemberNotification = () => {
         setHasMore(res?.pagination?.hasMore);
 
         setNotifications((prev) =>
-          append ? [...prev, ...res?.data] : res?.data
+          append ? [...prev, ...res?.data] : res?.data,
         );
       }
     } catch (err) {
@@ -66,7 +66,7 @@ const MemberNotification = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6">
+    <div className="max-w-3xl mx-auto px-4 py-6 mt-10">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="p-3 bg-blue-100 rounded-full">
@@ -98,7 +98,16 @@ const MemberNotification = () => {
           <div
             key={n._id}
             className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md cursor-pointer"
-            onClick={() => n.url && window.open(n.url, "_blank")}
+            // onClick={() => n.url && window.open(n.url, "_blank")}
+            onClick={() => {
+              if (!n.url) return;
+
+              const finalUrl = n.url.startsWith("http")
+                ? n.url
+                : `https://${n.url}`;
+
+              window.open(finalUrl, "_blank");
+            }}
           >
             <div className="flex gap-4">
               <div className="p-2 bg-blue-50 rounded-full">
