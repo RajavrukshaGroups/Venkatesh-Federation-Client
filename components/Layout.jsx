@@ -98,8 +98,11 @@ const Navbar = () => {
     { name: "Contact Us", path: "/contact" },
   ];
 
-  const headerClass = `fixed w-full z-50 transition-all duration-300 ${
-    isScrolled ? "bg-white shadow-md py-1" : "bg-white shadow-sm py-1"
+  // const headerClass = `fixed w-full z-50 transition-all duration-300 ${
+  //   isScrolled ? "bg-white shadow-md py-1" : "bg-white shadow-sm py-1"
+  // }`;
+  const headerClass = `fixed w-full z-50 transition-all duration-300 bg-white ${
+    isScrolled ? "shadow-md" : "shadow-sm"
   }`;
 
   const toggleSubmenu = (name) => {
@@ -229,18 +232,30 @@ const Navbar = () => {
           </div>
         </div>
       </div> */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-3">
         <div className="flex justify-between items-center">
           <Link
             to="/"
             className="flex items-center space-x-3 relative z-50 group"
           >
             {/* Increased Logo Size */}
-            <div className="w-32 h-32 flex items-center justify-center">
+            {/* <div className="w-32 h-32 flex items-center justify-center">
               <img
                 src={forumLogo}
                 alt="AITIF Logo"
                 className="w-28 h-28 object-contain" // Increased from w-20 h-20 to w-28 h-28
+              />
+            </div> */}
+            <div className="flex items-center justify-center">
+              <img
+                src={forumLogo}
+                alt="AITIF Logo"
+                className="
+      w-16 h-16
+      sm:w-20 sm:h-20
+      lg:w-28 lg:h-28
+      object-contain
+    "
               />
             </div>
 
@@ -355,17 +370,20 @@ const Navbar = () => {
       </div>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-white z-40 overflow-y-auto pt-24 pb-8 px-4 xl:hidden">
-          <div className="space-y-1">
+        // <div className="fixed inset-0 bg-white z-40 overflow-y-auto pt-24 pb-8 px-4 xl:hidden">
+        //   <div className="space-y-1">
+        <div className="fixed inset-0 bg-white z-40 xl:hidden">
+          <div className="pt-20 px-4 pb-6 max-h-screen overflow-y-auto">
             {navLinks.map((link) => (
               <div key={link.name}>
                 <div className="flex justify-between items-center border-b border-gray-100">
                   <Link
                     to={link.path}
                     onClick={() => !link.children && setIsOpen(false)}
-                    className={`block px-3 py-4 text-base font-bold text-navy-900 ${
-                      location.pathname === link.path ? "text-blue-700" : ""
-                    }`}
+                    className={`block px-4 py-4
+  text-lg font-semibold
+  text-slate-900
+  active:bg-blue-50 ${location.pathname === link.path ? "text-blue-700" : ""}`}
                   >
                     {link.name}
                   </Link>
