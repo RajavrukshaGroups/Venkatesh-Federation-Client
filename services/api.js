@@ -3,7 +3,8 @@ import axios from "axios";
 /* =======================
    AXIOS INSTANCE
 ======================= */
-const API_BASE = "http://localhost:8000";
+// const API_BASE = "http://localhost:8000";
+const API_BASE = "https://server.aitif.in";
 // change to production URL when needed
 
 const api = axios.create({
@@ -27,7 +28,7 @@ api.interceptors.response.use(
 
     console.error("API Error:", message);
     return Promise.reject(message);
-  }
+  },
 );
 
 export default api;

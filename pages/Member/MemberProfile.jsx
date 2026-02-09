@@ -23,7 +23,8 @@ export default function MemberProfile() {
   const handleViewCertificate = (member) => {
     console.log("member info", member);
     window.open(
-      `http://localhost:8000/member/auth/user/certificate/${member?._id}`,
+      // `http://localhost:8000/member/auth/user/certificate/${member?._id}`,
+      `https://server.aitif.in/member/auth/user/certificate/${member?._id}`,
       "_blank",
     );
   };
@@ -89,9 +90,11 @@ export default function MemberProfile() {
         <div className="mb-8 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-            <p className="text-gray-600 mt-2">Manage your account information</p>
+            <p className="text-gray-600 mt-2">
+              Manage your account information
+            </p>
           </div>
-          
+
           {/* Notification Button */}
           <Link
             to="/member/notifications"
@@ -126,7 +129,7 @@ export default function MemberProfile() {
                     </p>
                   </div>
                 </div>
-                
+
                 {/* Quick Actions */}
                 <div className="flex items-center gap-3">
                   <Link
@@ -210,7 +213,7 @@ export default function MemberProfile() {
                   }
                   className="bg-teal-50"
                 />
-                
+
                 {/* Notification Card */}
                 <Link
                   to="/member/notifications"
