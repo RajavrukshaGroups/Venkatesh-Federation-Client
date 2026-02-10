@@ -463,14 +463,6 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About Us Column */}
           <div className="space-y-6">
-            {/* <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Building className="w-6 h-6 text-blue-700" />
-              </div>
-              <h3 className="text-xl font-bold text-blue-700 font-sans">
-                About Us
-              </h3>
-            </div> */}
             <div className="space-y-4">
               <div className="w-36 h-24 flex items-center justify-center">
                 <img
@@ -483,24 +475,54 @@ const Footer = () => {
                 <span className="font-semibold">
                   All India Trade and Industries Forum
                 </span>
-                <br></br>
+                <br />
                 is the premier national platform representing India's trade and
                 industry ecosystem through advocacy, empowerment, and strategic
                 partnerships.
               </p>
+              {/* <div className="pt-4">
+                <p className="font-medium text-slate-700 text-sm mb-3">
+                  Follow Us
+                </p>
+                <div className="flex gap-3">
+                  <a
+                    href="#"
+                    className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-200 transition-colors hover:scale-110 transform duration-200"
+                    aria-label="Facebook"
+                  >
+                    <Facebook size={18} />
+                  </a>
+                  <a
+                    href="#"
+                    className="w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-sky-600 hover:bg-sky-200 transition-colors hover:scale-110 transform duration-200"
+                    aria-label="Twitter"
+                  >
+                    <Twitter size={18} />
+                  </a>
+                  <a
+                    href="#"
+                    className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center text-pink-600 hover:bg-pink-200 transition-colors hover:scale-110 transform duration-200"
+                    aria-label="Instagram"
+                  >
+                    <Instagram size={18} />
+                  </a>
+                  <a
+                    href="#"
+                    className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center text-blue-800 hover:bg-blue-300 transition-colors hover:scale-110 transform duration-200"
+                    aria-label="LinkedIn"
+                  >
+                    <Linkedin size={18} />
+                  </a>
+                </div>
+              </div> */}
             </div>
           </div>
 
           {/* Quick Links Column */}
           <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-4">
-              {/* <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                <LinkIcon className="w-6 h-6 text-red-700" />
-              </div> */}
-              <h3 className="text-xl font-bold text-blue-700 font-sans">
-                Quick Links
-              </h3>
-            </div>
+            <h3 className="text-xl font-bold text-blue-700 font-sans">
+              Quick Links
+            </h3>
             <ul className="space-y-3">
               {[
                 { name: "Home", path: "/" },
@@ -526,124 +548,167 @@ const Footer = () => {
 
           {/* Our Initiatives Column */}
           <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <Target className="w-6 h-6 text-green-700" />
-              </div>
-              <h3 className="text-xl font-bold text-blue-700 font-sans">
-                Our Initiatives
-              </h3>
-            </div>
+            <h3 className="text-xl font-bold text-blue-700 font-sans">
+              Our Initiatives
+            </h3>
             <ul className="space-y-3">
-              {[
-                { name: "International Forum", path: "/international" },
-                // { name: "Youth Leadership Forum (YLF)", path: "/ylf" },
-                // { name: "Empowered Women Forum (EWEF)", path: "/ewef" },
-                // { name: "Media Room", path: "/media" },
-                // { name: "Trade Awareness Programs", path: "/awareness" },
-              ].map((link, i) => (
-                <li key={i}>
-                  <Link
-                    to={link.path}
-                    className="flex items-center gap-3 group hover:translate-x-1 transition-transform duration-200"
-                  >
-                    <div className="w-2 h-2 bg-red-600 rounded-full"></div>
-                    <span className="text-slate-700 hover:text-blue-700 font-medium text-sm transition-colors">
-                      {link.name}
-                    </span>
-                  </Link>
-                </li>
-              ))}
+              {[{ name: "International Forum", path: "/international" }].map(
+                (link, i) => (
+                  <li key={i}>
+                    <Link
+                      to={link.path}
+                      className="flex items-center gap-3 group hover:translate-x-1 transition-transform duration-200"
+                    >
+                      <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                      <span className="text-slate-700 hover:text-blue-700 font-medium text-sm transition-colors">
+                        {link.name}
+                      </span>
+                    </Link>
+                  </li>
+                ),
+              )}
             </ul>
           </div>
 
           {/* Contact Info Column */}
           <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-4">
-              {/* <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Mail className="w-6 h-6 text-purple-700" />
-              </div> */}
-              <h3 className="text-xl font-bold text-blue-700 font-sans">
-                Contact Info
-              </h3>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <MapPin className="w-4 h-4 text-blue-700" />
+            <h3 className="text-xl font-bold text-blue-700 font-sans">
+              Contact Info
+            </h3>
+            <div className="space-y-6">
+              {/* Delhi Office */}
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <MapPin className="w-4 h-4 text-blue-700" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-slate-800 text-sm mb-1">
+                      Delhi Office
+                    </p>
+                    <p className="text-slate-600 text-xs leading-relaxed">
+                      81/A, South Anarkali Extension,
+                      <br />
+                      Top Floor, Gali No.11, Krishna Nagar,
+                      <br />
+                      Delhi-110051, India
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold text-slate-800 text-sm">
-                    Head Office
-                  </p>
-                  <p className="text-slate-600 text-sm leading-relaxed">
-                    B- 1/67, Indira Chowk, near Nanital Bank,
-                    <br />
-                    New Kondli, Delhi-110096, India
-                  </p>
+
+                {/* <div className="flex items-center gap-3 ml-11">
+                  <div className="w-6 h-6 bg-red-50 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Phone className="w-3 h-3 text-red-700" />
+                  </div>
+                  <div className="flex flex-col">
+                    <a 
+                      href="tel:+919818407442" 
+                      className="text-slate-700 hover:text-blue-700 text-sm font-medium transition-colors"
+                    >
+                      +91 98184 07442
+                    </a>
+                    <a 
+                      href="tel:+919845105338" 
+                      className="text-slate-700 hover:text-blue-700 text-sm font-medium transition-colors mt-1"
+                    >
+                      +91 98451 05338
+                    </a>
+                  </div>
+                </div> */}
+              </div>
+
+              {/* Bangalore Office */}
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <MapPin className="w-4 h-4 text-green-700" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-slate-800 text-sm mb-1">
+                      Bangalore Office
+                    </p>
+                    <p className="text-slate-600 text-xs leading-relaxed">
+                      No 19, Millennium Business Bay,
+                      <br />
+                      A M Road, KPM New Extension,
+                      <br />
+                      Bangalore - 560002, India
+                    </p>
+                  </div>
                 </div>
               </div>
 
+              {/* Email */}
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-4 h-4 text-red-700" />
+                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-4 h-4 text-purple-700" />
                 </div>
                 <div>
-                  <p className="text-slate-800 text-sm font-semibold">
-                    +91 98765 43210
-                  </p>
-                  <p className="text-slate-600 text-xs">Mon-Fri, 9AM-6PM</p>
+                  <a
+                    href="mailto:aitifservices@gmail.com"
+                    className="text-slate-800 hover:text-blue-700 text-sm font-semibold transition-colors"
+                  >
+                    aitifservices@gmail.com
+                  </a>
+                  <p className="text-slate-500 text-xs">General Inquiries</p>
                 </div>
               </div>
-
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-4 h-4 text-green-700" />
+                <div className="w-6 h-6 bg-red-50 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-3 h-3 text-red-700" />
                 </div>
-                <div>
-                  <p className="text-slate-800 text-sm font-semibold">
-                    info@aitif.org
-                  </p>
-                  <p className="text-slate-600 text-xs">General Inquiries</p>
+                <div className="flex flex-col">
+                  <a
+                    href="tel:+919818407442"
+                    className="text-slate-700 hover:text-blue-700 text-sm font-medium transition-colors"
+                  >
+                    +91 98184 07442
+                  </a>
+                  <a
+                    href="tel:+919845105338"
+                    className="text-slate-700 hover:text-blue-700 text-sm font-medium transition-colors mt-1"
+                  >
+                    +91 98451 05338
+                  </a>
                 </div>
               </div>
 
               {/* Social Media */}
-              <div className="pt-4">
+              {/* <div className="pt-4">
                 <p className="font-medium text-slate-700 text-sm mb-3">
                   Follow Us
                 </p>
                 <div className="flex gap-3">
                   <a
                     href="#"
-                    className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-200 transition-colors"
+                    className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-200 transition-colors hover:scale-110 transform duration-200"
                     aria-label="Facebook"
                   >
                     <Facebook size={18} />
                   </a>
                   <a
                     href="#"
-                    className="w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-sky-600 hover:bg-sky-200 transition-colors"
+                    className="w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-sky-600 hover:bg-sky-200 transition-colors hover:scale-110 transform duration-200"
                     aria-label="Twitter"
                   >
                     <Twitter size={18} />
                   </a>
                   <a
                     href="#"
-                    className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center text-pink-600 hover:bg-pink-200 transition-colors"
+                    className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center text-pink-600 hover:bg-pink-200 transition-colors hover:scale-110 transform duration-200"
                     aria-label="Instagram"
                   >
                     <Instagram size={18} />
                   </a>
                   <a
                     href="#"
-                    className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center text-blue-800 hover:bg-blue-300 transition-colors"
+                    className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center text-blue-800 hover:bg-blue-300 transition-colors hover:scale-110 transform duration-200"
                     aria-label="LinkedIn"
                   >
                     <Linkedin size={18} />
-                  </a>
+                    </a>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -663,28 +728,28 @@ const Footer = () => {
               </p>
             </div>
 
-            <div className="flex items-center gap-6">
+            {/* <div className="flex items-center gap-6">
               <Link
                 to="/privacy-policy"
                 className="text-white/80 hover:text-white text-xs md:text-sm transition-colors"
               >
                 Privacy Policy
               </Link>
-              <div className="w-px h-4 bg-white/40"></div>
+              <div className="w-px h-4 bg-white/40 hidden md:block"></div>
               <Link
                 to="/terms"
-                className="text-white/80 hover:text-white text-xs md:text-sm transition-colors"
+                className="text-white/80 hover:text-white text-xs md:text-sm transition-colors hidden md:block"
               >
                 Terms of Use
               </Link>
-              <div className="w-px h-4 bg-white/40"></div>
+              <div className="w-px h-4 bg-white/40 hidden md:block"></div>
               <Link
                 to="/sitemap"
-                className="text-white/80 hover:text-white text-xs md:text-sm transition-colors"
+                className="text-white/80 hover:text-white text-xs md:text-sm transition-colors hidden md:block"
               >
                 Sitemap
               </Link>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -696,7 +761,7 @@ const Layout = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-800">
       <Navbar />
-      <StickySidebar />
+      {/* <StickySidebar /> */}
       <main className="flex-grow pt-[96px]">{children}</main>
       <Footer />
     </div>

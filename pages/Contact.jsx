@@ -53,24 +53,34 @@ const Contact = () => {
   const contactDetails = [
     {
       icon: Building,
-      title: "Registered Office",
+      title: "Delhi Office",
       details: [
-        "All India Trade and Industries Forum",
-        "B- 1/67, Indira Chowk",
-        "Near Nanital Bank, New Kondli",
-        "Delhi - 110096, India",
+        // "All India Trade and Industries Forum",
+        "81/A, South Anarkali Extension",
+        "Top Floor, Gali No.11, Krishna Nagar",
+        "Delhi - 110051, India",
       ],
       color: "text-blue-700",
       bgColor: "bg-blue-50",
     },
     {
+      icon: Building,
+      title: "Bangalore Office",
+      details: [
+        "No 19, Millennium Business Bay",
+        "A M Road, KPM New Extension",
+        "Bangalore - 560002, India",
+      ],
+      color: "text-green-700",
+      bgColor: "bg-green-50",
+    },
+    {
       icon: Mail,
       title: "Email Address",
       details: [
-        "info@aitif.org",
-        "support@aitif.org",
-        "membership@aitif.org",
-        "media@aitif.org",
+        "aitifservices@gmail.com",
+        // "support@aitif.org",
+        // "membership@aitif.org",
       ],
       color: "text-red-600",
       bgColor: "bg-red-50",
@@ -79,22 +89,9 @@ const Contact = () => {
       icon: Phone,
       title: "Phone Numbers",
       details: [
-        "+91 98765 43210",
-        "+91 98765 43211",
-        "+91 98765 43212",
-        "Toll Free: 1800-123-4567",
-      ],
-      color: "text-green-700",
-      bgColor: "bg-green-50",
-    },
-    {
-      icon: Clock,
-      title: "Working Hours",
-      details: [
-        "Monday to Friday: 9:00 AM - 6:00 PM",
-        "Saturday: 9:00 AM - 2:00 PM",
-        "Sunday: Closed",
-        "Emergency: 24/7 Support Available",
+        "+91 98184 07442",
+        "+91 98451 05338",
+        "Mon-Fri: 9:30 AM - 6:00 PM",
       ],
       color: "text-purple-700",
       bgColor: "bg-purple-50",
@@ -104,56 +101,43 @@ const Contact = () => {
   const departmentContacts = [
     {
       department: "Membership & Enrollment",
-      contact: "+91 98765 43213",
+      contact: "+91 98184 07442",
       email: "membership@aitif.org",
     },
     {
-      department: "Policy Advocacy",
-      contact: "+91 98765 43214",
-      email: "advocacy@aitif.org",
+      department: "General Inquiries & Support",
+      contact: "+91 98184 07442",
+      email: "aitifservices@gmail.com",
     },
     {
       department: "Business Support",
-      contact: "+91 98765 43215",
-      email: "support@aitif.org",
+      contact: "+91 98184 07442",
+      email: "aitifservices@gmail.com",
     },
     {
-      department: "Media & Communications",
-      contact: "+91 98765 43216",
-      email: "media@aitif.org",
+      department: "Partnership & Collaboration",
+      contact: "+91 98451 05338",
+      email: "aitifservices@gmail.com",
     },
     {
       department: "Events & Workshops",
-      contact: "+91 98765 43217",
-      email: "events@aitif.org",
-    },
-    {
-      department: "Technical Support",
-      contact: "+91 98765 43218",
-      email: "tech@aitif.org",
+      contact: "+91 98451 05338",
+      email: "aitifservices@gmail.com",
     },
   ];
 
   const regionalOffices = [
     {
-      region: "Northern Region",
-      location: "Delhi NCR",
-      contact: "+91 98765 43220",
+      region: "Delhi Office",
+      location: "81/A, South Anarkali Extension",
+      location2: "Top Floor, Gali No.11, Krishna Nagar, Delhi-110051",
+      contact: "+91 98184 07442",
     },
     {
-      region: "Western Region",
-      location: "Mumbai, Maharashtra",
-      contact: "+91 98765 43221",
-    },
-    {
-      region: "Southern Region",
-      location: "Bengaluru, Karnataka",
-      contact: "+91 98765 43222",
-    },
-    {
-      region: "Eastern Region",
-      location: "Kolkata, West Bengal",
-      contact: "+91 98765 43223",
+      region: "Bangalore Office",
+      location: "No 19, Millennium Business Bay",
+      location2: "A M Road, KPM New Extension, Bangalore - 560002",
+      contact: "+91 98451 05338",
     },
   ];
 
@@ -274,7 +258,7 @@ const Contact = () => {
           </div>
         </motion.div>
 
-        {/* Department Contacts */}
+        {/* Department Contacts & Regional Offices */}
         {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
           <motion.div
             initial="hidden"
@@ -302,12 +286,16 @@ const Contact = () => {
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-gray-600">
                     <span className="flex items-center gap-1">
                       <Phone size={14} />
-                      {dept.contact}
+                      <a href={`tel:${dept.contact.replace(/\s/g, '')}`} className="hover:text-blue-700">
+                        {dept.contact}
+                      </a>
                     </span>
                     <span className="hidden sm:inline">•</span>
                     <span className="flex items-center gap-1">
                       <Mail size={14} />
-                      {dept.email}
+                      <a href={`mailto:${dept.email}`} className="hover:text-blue-700">
+                        {dept.email}
+                      </a>
                     </span>
                   </div>
                 </motion.div>
@@ -323,7 +311,7 @@ const Contact = () => {
             className="bg-gradient-to-br from-red-50 to-white rounded-2xl p-8 border shadow-lg"
           >
             <h3 className="text-2xl font-bold mb-6 text-gray-900">
-              Regional Offices
+              Office Locations
             </h3>
             <div className="space-y-4">
               {regionalOffices.map((office, index) => (
@@ -339,13 +327,18 @@ const Contact = () => {
                     {office.region}
                   </h4>
                   <div className="flex flex-col text-sm text-gray-600">
-                    <span className="flex items-center gap-1 mb-1">
-                      <MapPin size={14} />
-                      {office.location}
+                    <span className="flex items-start gap-1 mb-1">
+                      <MapPin size={14} className="mt-1 flex-shrink-0" />
+                      <div>
+                        <div>{office.location}</div>
+                        <div>{office.location2}</div>
+                      </div>
                     </span>
-                    <span className="flex items-center gap-1">
+                    <span className="flex items-center gap-1 mt-2">
                       <Phone size={14} />
-                      {office.contact}
+                      <a href={`tel:${office.contact.replace(/\s/g, '')}`} className="hover:text-blue-700">
+                        {office.contact}
+                      </a>
                     </span>
                   </div>
                 </motion.div>
@@ -381,9 +374,9 @@ const Contact = () => {
                 For detailed queries and documentation
               </p>
               <div className="mt-3">
-                <span className="text-sm text-blue-700 font-semibold">
-                  Response within 24 hours
-                </span>
+                <a href="mailto:aitifservices@gmail.com" className="text-sm text-blue-700 font-semibold hover:underline">
+                  aitifservices@gmail.com
+                </a>
               </div>
             </div>
 
@@ -396,9 +389,13 @@ const Contact = () => {
                 For immediate assistance and quick queries
               </p>
               <div className="mt-3">
-                <span className="text-sm text-red-700 font-semibold">
-                  24/7 Emergency support available
-                </span>
+                <a href="tel:+919818407442" className="text-sm text-red-700 font-semibold hover:underline">
+                  +91 98184 07442
+                </a>
+                <br/>
+                 <a href="tel:+919845105338" className="text-sm text-red-700 font-semibold hover:underline">
+                  +91 98451 05338
+                </a>
               </div>
             </div>
 
@@ -406,7 +403,7 @@ const Contact = () => {
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Users className="w-8 h-8 text-green-600" />
               </div>
-              <h4 className="text-xl font-bold mb-2">In-person Meetings</h4>
+              <h4 className="text-xl font-bold mb-2">Office Visits</h4>
               <p className="text-gray-600">
                 Scheduled meetings at our office locations
               </p>
@@ -501,15 +498,21 @@ const Contact = () => {
               need. Feel free to reach out through any of our contact channels.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <div className="flex items-center gap-3 px-6 py-3 bg-blue-700 text-white font-bold rounded-lg">
+              <a
+                href="tel:+919818407442"
+                className="flex items-center gap-3 px-6 py-3 bg-blue-700 text-white font-bold rounded-lg hover:bg-blue-800 transition-colors"
+              >
                 <Phone size={20} />
-                <span>Call: +91 98765 43210</span>
-              </div>
+                <span>Call: +91 98184 07442</span>
+              </a>
               <div className="text-gray-600 font-medium">OR</div>
-              <div className="flex items-center gap-3 px-6 py-3 border-2 border-blue-700 text-blue-700 font-bold rounded-lg">
+              <a
+                href="mailto:aitifservices@gmail.com"
+                className="flex items-center gap-3 px-6 py-3 border-2 border-blue-700 text-blue-700 font-bold rounded-lg hover:bg-blue-50 transition-colors"
+              >
                 <Mail size={20} />
-                <span>Email: info@aitif.org</span>
-              </div>
+                <span>Email: aitifservices@gmail.com</span>
+              </a>
             </div>
             <p className="text-sm text-gray-500 mt-6">
               We typically respond within 2 business hours during working days
