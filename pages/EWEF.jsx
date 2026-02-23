@@ -59,7 +59,7 @@ const EWEF = () => {
               </div>
               <div className="relative z-20 flex flex-col items-center justify-center bg-white w-20 h-20 md:w-24 md:h-24 rounded-full shadow-sm pt-2">
                 <span className="font-serif font-black text-2xl md:text-4xl text-[#DC2626] tracking-tighter">
-                  FTII
+                  AITIF
                 </span>
               </div>
               {/* Spinning Text */}

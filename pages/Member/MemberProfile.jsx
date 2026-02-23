@@ -19,7 +19,8 @@ export default function MemberProfile() {
   const [notificationCount, setNotificationCount] = useState(0);
 
   // const referralLink = `http://localhost:3000/membership-registration/${member?.userId}`;
-  const referralLink = `https://test.aitif.in/membership-registration/${member?.userId}`;
+  // const referralLink = `https://test.aitif.in/membership-registration/${member?.userId}`;
+  const referralLink = `https://aitif.in/membership-registration/${member?.userId}`;
 
   const handleViewCertificate = (member) => {
     console.log("member info", member);
