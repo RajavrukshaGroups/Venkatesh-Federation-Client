@@ -156,6 +156,10 @@ import MemberProfile from "./pages/Member/MemberProfile";
 import MemberForgotPassword from "./pages/Member/MemberForgotPassword";
 import MemberResetPassword from "./pages/Member/MemberResetPassword";
 
+
+import BackToTop from "./components/BackToTop";
+import ContactEmailIcons from "./components/ContactEmailIcons";
+
 /* ---------------- SCROLL TO TOP ---------------- */
 
 const ScrollToTop = () => {
@@ -240,6 +244,8 @@ const App = () => {
             }
           />
         </Routes>
+        <BackToTop />
+        <ContactEmailIcons />
       </Layout>
     </BrowserRouter>
   );

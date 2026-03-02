@@ -320,17 +320,17 @@ const Membership = () => {
                 }`}
               >
                 {index === 1 && (
-                  <div className="absolute top-2 right-2 sm:top-0 sm:right-0 bg-blue-700 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-bl-lg text-xs sm:text-sm">
+                  <div className="absolute top-2  right-2 sm:top-0 sm:right-0 bg-blue-700 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-bl-lg text-xs sm:text-sm">
                     <div className="flex items-center gap-1">
                       <Star className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="font-bold">POPULAR</span>
+                      <span className="font-bold ">POPULAR</span>
                     </div>
                   </div>
                 )}
 
                 {/* Plan Header */}
                 <div
-                  className={`p-4 sm:p-6 lg:p-8 ${index === 1 ? "bg-blue-50" : "bg-gray-50"} border-b`}
+                  className={`p-4 pt-8 sm:p-6 lg:p-8 ${index === 1 ? "bg-blue-50" : "bg-gray-50"} border-b`}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3 sm:mb-4">
                     <div className="flex items-center gap-2 sm:gap-3">
