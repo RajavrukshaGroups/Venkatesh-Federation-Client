@@ -542,7 +542,7 @@ const Navbar = () => {
           </nav>
 
           {/* Mobile Menu Button */}
-          <div className="xl:hidden">
+          <div className="xl:hidden" style={{margin:"1rem"}}>
             <button
               onClick={() => setIsOpen(true)}
               className="text-slate-900 p-2"
@@ -570,7 +570,7 @@ const Navbar = () => {
         }`}
       >
         {/* Close Button */}
-        <div className="flex justify-end p-4">
+        <div className="flex justify-end p-4" style={{margin:"1rem"}}>
           <button onClick={() => setIsOpen(false)}>
             <X size={28} />
           </button>
