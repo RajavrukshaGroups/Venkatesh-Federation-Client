@@ -55,6 +55,8 @@ const MembershipRegistration = () => {
   const [accountNumber, setAccountNumber] = useState("");
   const [ifscCode, setIfscCode] = useState("");
 
+  const [skipBankDetails, setSkipBankDetails] = useState(false);
+
   /* =========================
      MEMBERSHIP PLAN STATES
   ========================= */
@@ -418,6 +420,7 @@ const MembershipRegistration = () => {
     setBankName("");
     setAccountNumber("");
     setIfscCode("");
+    setSkipBankDetails(false);
 
     //Membership
     setSelectedPlan("");
@@ -469,8 +472,12 @@ const MembershipRegistration = () => {
         businessNature,
         majorCommodities: majorCommodities.filter(Boolean),
         gstNumber,
+        // bankDetails:
+        //   bankName || accountNumber || ifscCode
+        //     ? { bankName, accountNumber, ifscCode }
+        //     : undefined,
         bankDetails:
-          bankName || accountNumber || ifscCode
+          !skipBankDetails && (bankName || accountNumber || ifscCode)
             ? { bankName, accountNumber, ifscCode }
             : undefined,
         referral: referrerId
@@ -1037,10 +1044,26 @@ const MembershipRegistration = () => {
             )}
 
             {/* BANK DETAILS */}
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={skipBankDetails}
+                onChange={(e) => {
+                  setSkipBankDetails(e.target.checked);
+
+                  if (e.target.checked) {
+                    setBankName("");
+                    setAccountNumber("");
+                    setIfscCode("");
+                  }
+                }}
+              />
+              <span className="text-sm font-medium">Skip Bank Details</span>
+            </div>
             <div className="flex flex-col gap-6">
               <span>13. BANK DETAILS (FOR MONEY BACK OFFER)</span>
 
-              <div className="flex flex-col md:flex-row gap-4">
+              {/* <div className="flex flex-col md:flex-row gap-4">
                 <span className="md:w-1/3">BANK NAME</span>
                 <input
                   value={bankName}
@@ -1081,7 +1104,37 @@ const MembershipRegistration = () => {
                     errors.ifscCode ? "border-red-500" : "border-dotted"
                   }`}
                 />
-              </div>
+              </div> */}
+              {!skipBankDetails && (
+                <>
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <span className="md:w-1/3">BANK NAME</span>
+                    <input
+                      value={bankName}
+                      onChange={(e) => setBankName(e.target.value)}
+                      className="flex-1 border-b-2 border-dotted px-2"
+                    />
+                  </div>
+
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <span className="md:w-1/3">A/C NO</span>
+                    <input
+                      value={accountNumber}
+                      onChange={(e) => setAccountNumber(e.target.value)}
+                      className="flex-1 border-b-2 border-dotted px-2"
+                    />
+                  </div>
+
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <span className="md:w-1/3">IFSC CODE</span>
+                    <input
+                      value={ifscCode}
+                      onChange={(e) => setIfscCode(e.target.value)}
+                      className="flex-1 border-b-2 border-dotted px-2"
+                    />
+                  </div>
+                </>
+              )}
             </div>
 
             {/* SUBMIT */}
