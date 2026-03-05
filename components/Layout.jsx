@@ -21,6 +21,420 @@ import {
 } from "lucide-react";
 import forumLogo from "../assets/AITIF_new_logo.png";
 
+// const Navbar = () => {
+//   const member = JSON.parse(localStorage.getItem("member"));
+//   const isMemberLoggedIn = !!member;
+
+//   const [isOpen, setIsOpen] = useState(false);
+//   const [openSubmenu, setOpenSubmenu] = useState(null);
+//   const [isScrolled, setIsScrolled] = useState(false);
+//   const location = useLocation();
+
+//   useEffect(() => {
+//     const handleScroll = () => setIsScrolled(window.scrollY > 20);
+//     window.addEventListener("scroll", handleScroll);
+//     return () => window.removeEventListener("scroll", handleScroll);
+//   }, []);
+
+//   const navLinks = [
+//     // { name: 'Home', path: '/' },
+//     { name: "About Us", path: "/about" },
+//     {
+//       name: "Membership",
+//       path: "/membership",
+//       // children: [
+//       //   { name: "FTII Council", path: "/team?tab=council" },
+//       //   { name: "Office Bearers In States", path: "/team?tab=office_bearers" },
+//       //   { name: "State Presidents", path: "/team?tab=state_presidents" },
+//       //   { name: "Honorary Consultants", path: "/team?tab=consultants" },
+//       //   { name: "FTII Patrons", path: "/team?tab=patrons" },
+//       //   { name: "National Vice-Presidents", path: "/team?tab=vice_presidents" },
+//       //   { name: "Advisory Committee", path: "/team?tab=advisory" },
+//       //   { name: "National Secretary", path: "/team?tab=secretary" },
+//       //   { name: "Convener", path: "/team?tab=convener" },
+//       // ],
+//     },
+//     { name: "Services", path: "/services" },
+//     {
+//       name: "International Forum",
+//       path: "/international",
+//       // children: [
+//       //   {
+//       //     name: "International Director",
+//       //     path: "/team?tab=international_director",
+//       //   },
+//       //   {
+//       //     name: "Chairman Int. Council",
+//       //     path: "/team?tab=international_chairman",
+//       //   },
+//       // ],
+//     },
+//     // { name: "Opinionator", path: "/opinionator" },
+//     // {
+//     //   name: "YLF",
+//     //   path: "/ylf",
+//     //   children: [
+//     //     { name: "Odisha", path: "/team?tab=ylf_odisha" },
+//     //     { name: "Jammu and Kashmir", path: "/team?tab=ylf_jk" },
+//     //   ],
+//     // },
+//     // {
+//     //   name: "EWEF",
+//     //   path: "/ewef",
+//     //   children: [
+//     //     { name: "Chair Persons of EWEF", path: "/team?tab=ewef_chairpersons" },
+//     //   ],
+//     // },
+//     // {
+//     //   name: "Media Room",
+//     //   path: "/media",
+//     //   children: [
+//     //     { name: "Magazine Vyapar Trends", path: "/media?tab=magazine" },
+//     //     { name: "Gallery", path: "/media?tab=gallery" },
+//     //     { name: "Blog", path: "/media?tab=blog" },
+//     //   ],
+//     // },
+//     // { name: "Products Promotional", path: "/products" },
+//     { name: "Contact Us", path: "/contact" },
+//   ];
+
+//   // const headerClass = `fixed w-full z-50 transition-all duration-300 ${
+//   //   isScrolled ? "bg-white shadow-md py-1" : "bg-white shadow-sm py-1"
+//   // }`;
+//   const headerClass = `fixed w-full z-50 transition-all duration-300 bg-white ${
+//     isScrolled ? "shadow-md" : "shadow-sm"
+//   }`;
+
+//   const toggleSubmenu = (name) => {
+//     if (openSubmenu === name) {
+//       setOpenSubmenu(null);
+//     } else {
+//       setOpenSubmenu(name);
+//     }
+//   };
+
+//   return (
+//     <header className={headerClass}>
+//       {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+//         <div className="flex justify-between items-center">
+//           <Link
+//             to="/"
+//             className="flex items-center space-x-3 relative z-50 group"
+//           >
+//             <div className="w-25 h-25 flex items-center justify-center">
+//               <img
+//                 src={forumLogo}
+//                 alt="AITIF Logo"
+//                 className="w-20 h-20 object-contain"
+//               />
+//             </div>
+//           </Link>
+
+//           <nav className="hidden xl:flex space-x-8 items-center">
+//             {navLinks.map((link) => (
+//               <div key={link.name} className="relative group h-full py-2">
+//                 <Link
+//                   to={link.path}
+//                   // className={`flex items-center text-base font-semibold tracking-wide transition-colors ${
+//                   //   location.pathname === link.path
+//                   //     ? "text-blue-700 border-b-2 border-blue-700 pb-0.5"
+//                   //     : "text-navy-900 hover:text-blue-700"
+//                   // }`}
+//                   className={`flex items-center text-[17px] font-serif font-bold tracking-widest uppercase transition-colors ${
+//                     location.pathname === link.path
+//                       ? "text-blue-800 border-b-2 border-blue-800 pb-1"
+//                       : "text-slate-900 hover:text-blue-800"
+//                   }`}
+//                 >
+//                   {link.name}
+//                   {link.children && (
+//                     <ChevronDown
+//                       size={14}
+//                       className="ml-1 group-hover:rotate-180 transition-transform duration-300"
+//                     />
+//                   )}
+//                 </Link>
+
+//                 {link.children && (
+//                   <div className="absolute left-0 top-full pt-4 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
+//                     <div className="bg-white shadow-xl border-t-2 border-blue-700 rounded-b-sm py-1 flex flex-col">
+//                       {link.children.map((child) => (
+//                         <Link
+//                           key={child.name}
+//                           to={child.path}
+//                           className="px-5 py-3 text-xs font-semibold text-navy-800 hover:bg-gray-50 hover:text-blue-700 border-b border-gray-100 last:border-0 uppercase tracking-wider transition-colors flex items-center justify-between group/item"
+//                         >
+//                           {child.name}
+//                           <ChevronRight
+//                             size={12}
+//                             className="opacity-0 group-hover/item:opacity-100 transition-opacity text-blue-600"
+//                           />
+//                         </Link>
+//                       ))}
+//                     </div>
+//                   </div>
+//                 )}
+//               </div>
+//             ))}
+//             {!isMemberLoggedIn && (
+//               <Link
+//                 to="/member/login"
+//                 className="ml-6 px-4 py-2 rounded bg-blue-700 text-white text-sm font-bold hover:bg-blue-800"
+//               >
+//                 Member Login
+//               </Link>
+//             )}
+
+//             {isMemberLoggedIn && (
+//               <div className="flex items-center gap-4 ml-6">
+//                 <Link
+//                   to="/member/notifications"
+//                   className="text-sm font-bold text-navy-900 hover:text-blue-700"
+//                 >
+//                   Notifications
+//                 </Link>
+
+//                 <Link
+//                   to="/member/blogs"
+//                   className="text-sm font-bold text-navy-900 hover:text-blue-700"
+//                 >
+//                   Blogs
+//                 </Link>
+
+//                 <Link
+//                   to="/member/profile"
+//                   className="text-sm font-bold text-navy-900 hover:text-blue-700"
+//                 >
+//                   Profile
+//                 </Link>
+
+//                 <button
+//                   onClick={() => {
+//                     localStorage.removeItem("member");
+//                     localStorage.removeItem("memberToken");
+//                     window.location.href = "/";
+//                   }}
+//                   className="text-sm font-bold text-red-600 hover:text-red-700"
+//                 >
+//                   Logout
+//                 </button>
+//               </div>
+//             )}
+//           </nav>
+
+//           <div className="xl:hidden relative z-50">
+//             <button
+//               onClick={() => setIsOpen(!isOpen)}
+//               className="text-navy-900"
+//             >
+//               {isOpen ? <X size={28} /> : <Menu size={28} />}
+//             </button>
+//           </div>
+//         </div>
+//       </div> */}
+//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-3">
+//         <div className="flex justify-between items-center">
+//           <Link
+//             to="/"
+//             className="flex items-center space-x-3 relative z-50 group"
+//           >
+//             {/* Increased Logo Size */}
+//             {/* <div className="w-32 h-32 flex items-center justify-center">
+//               <img
+//                 src={forumLogo}
+//                 alt="AITIF Logo"
+//                 className="w-28 h-28 object-contain" // Increased from w-20 h-20 to w-28 h-28
+//               />
+//             </div> */}
+//             <div className="flex items-center justify-center">
+//               <img
+//                 src={forumLogo}
+//                 alt="AITIF Logo"
+//                 className="
+//       w-16 h-16
+//       sm:w-20 sm:h-20
+//       lg:w-28 lg:h-28
+//       object-contain
+//     "
+//               />
+//             </div>
+
+//             {/* Optional: Add Organization Name next to Logo on larger screens */}
+//             {/* <div className="hidden lg:block">
+//               <div className="text-xl font-bold text-blue-900 leading-tight">
+//                 All India Trade & Industries Forum
+//               </div>
+//               <div className="text-xs text-gray-600 font-medium">
+//                 Empowering Trade, Strengthening Industry
+//               </div>
+//             </div> */}
+//           </Link>
+
+//           <nav className="hidden xl:flex space-x-10 items-center">
+//             {" "}
+//             {/* Increased space-x from 8 to 10 */}
+//             {navLinks.map((link) => (
+//               <div key={link.name} className="relative group h-full py-2">
+//                 <Link
+//                   to={link.path}
+//                   className={`flex items-center text-[17px] font-serif font-bold tracking-widest uppercase transition-colors ${
+//                     location.pathname === link.path
+//                       ? "text-blue-800 border-b-2 border-blue-800 pb-1"
+//                       : "text-slate-900 hover:text-blue-800"
+//                   }`}
+//                 >
+//                   {link.name}
+//                   {link.children && (
+//                     <ChevronDown
+//                       size={14}
+//                       className="ml-1 group-hover:rotate-180 transition-transform duration-300"
+//                     />
+//                   )}
+//                 </Link>
+
+//                 {link.children && (
+//                   <div className="absolute left-0 top-full pt-4 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
+//                     <div className="bg-white shadow-xl border-t-2 border-blue-700 rounded-b-sm py-1 flex flex-col">
+//                       {link.children.map((child) => (
+//                         <Link
+//                           key={child.name}
+//                           to={child.path}
+//                           className="px-5 py-3 text-xs font-semibold text-navy-800 hover:bg-gray-50 hover:text-blue-700 border-b border-gray-100 last:border-0 uppercase tracking-wider transition-colors flex items-center justify-between group/item"
+//                         >
+//                           {child.name}
+//                           <ChevronRight
+//                             size={12}
+//                             className="opacity-0 group-hover/item:opacity-100 transition-opacity text-blue-600"
+//                           />
+//                         </Link>
+//                       ))}
+//                     </div>
+//                   </div>
+//                 )}
+//               </div>
+//             ))}
+//             {!isMemberLoggedIn && (
+//               <Link
+//                 to="/member/login"
+//                 className="ml-6 px-5 py-2.5 rounded-lg bg-blue-700 text-white text-sm font-bold hover:bg-blue-800 shadow-md hover:shadow-lg transition-all"
+//               >
+//                 Member Login
+//               </Link>
+//             )}
+//             {isMemberLoggedIn && (
+//               <div className="flex items-center gap-4 ml-6">
+//                 {/* <Link
+//                   to="/member/notifications"
+//                   className="text-sm font-bold text-navy-900 hover:text-blue-700 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
+//                 >
+//                   Notifications
+//                 </Link> */}
+
+//                 {/* <Link
+//                   to="/member/blogs"
+//                   className="text-sm font-bold text-navy-900 hover:text-blue-700 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
+//                 >
+//                   Blogs
+//                 </Link> */}
+
+//                 <Link
+//                   to="/member/profile"
+//                   className="text-sm font-bold text-navy-900 hover:text-blue-700 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
+//                 >
+//                   Profile
+//                 </Link>
+
+//                 <button
+//                   onClick={() => {
+//                     localStorage.removeItem("member");
+//                     localStorage.removeItem("memberToken");
+//                     window.location.href = "/";
+//                   }}
+//                   className="text-sm font-bold text-red-600 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 transition-colors"
+//                 >
+//                   Logout
+//                 </button>
+//               </div>
+//             )}
+//           </nav>
+
+//           <div className="xl:hidden relative z-50">
+//             <button
+//               onClick={() => setIsOpen(!isOpen)}
+//               className="text-navy-900 p-2"
+//             >
+//               {isOpen ? <X size={32} /> : <Menu size={32} />}
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+
+//       {isOpen && (
+//         // <div className="fixed inset-0 bg-white z-40 overflow-y-auto pt-24 pb-8 px-4 xl:hidden">
+//         //   <div className="space-y-1">
+//         <div className="fixed inset-0 bg-white z-40 xl:hidden">
+//           <div className="pt-20 px-4 pb-6 max-h-screen overflow-y-auto">
+//             {navLinks.map((link) => (
+//               <div key={link.name}>
+//                 <div className="flex justify-between items-center border-b border-gray-100">
+//                   <Link
+//                     to={link.path}
+//                     onClick={() => !link.children && setIsOpen(false)}
+//                     className={`block px-4 py-4
+//   text-lg font-semibold
+//   text-slate-900
+//   active:bg-blue-50 ${location.pathname === link.path ? "text-blue-700" : ""}`}
+//                   >
+//                     {link.name}
+//                   </Link>
+//                   {link.children && (
+//                     <button
+//                       onClick={() => toggleSubmenu(link.name)}
+//                       className="p-4 text-gray-500"
+//                     >
+//                       <ChevronDown
+//                         size={20}
+//                         className={`transform transition-transform ${
+//                           openSubmenu === link.name ? "rotate-180" : ""
+//                         }`}
+//                       />
+//                     </button>
+//                   )}
+//                 </div>
+
+//                 {link.children && openSubmenu === link.name && (
+//                   <div className="bg-gray-50">
+//                     {link.children.map((child) => (
+//                       <Link
+//                         key={child.name}
+//                         to={child.path}
+//                         onClick={() => setIsOpen(false)}
+//                         className="block px-6 py-3 text-xs font-semibold text-gray-600 hover:text-blue-700 uppercase tracking-wide border-b border-gray-100 last:border-0"
+//                       >
+//                         {child.name}
+//                       </Link>
+//                     ))}
+//                   </div>
+//                 )}
+//               </div>
+//             ))}
+//             {!isMemberLoggedIn && (
+//               <Link
+//                 to="/member/login"
+//                 className="ml-6 px-4 py-2 rounded bg-blue-700 text-white text-sm font-bold hover:bg-blue-800"
+//               >
+//                 Member Login
+//               </Link>
+//             )}
+//           </div>
+//         </div>
+//       )}
+//     </header>
+//   );
+// };
+
+
+
 const Navbar = () => {
   const member = JSON.parse(localStorage.getItem("member"));
   const isMemberLoggedIn = !!member;
@@ -30,326 +444,95 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
 
+  /* ---------------- SCROLL SHADOW EFFECT ---------------- */
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  /* ---------------- BODY SCROLL LOCK ---------------- */
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? "hidden" : "auto";
+    return () => (document.body.style.overflow = "auto");
+  }, [isOpen]);
+
+  /* ---------------- CLOSE MENU ON ROUTE CHANGE ---------------- */
+  useEffect(() => {
+    setIsOpen(false);
+    setOpenSubmenu(null);
+  }, [location.pathname]);
+
+  /* ---------------- LOGOUT FUNCTION ---------------- */
+  const handleLogout = () => {
+    localStorage.removeItem("member");
+    localStorage.removeItem("memberToken");
+    window.location.href = "/";
+  };
+
   const navLinks = [
-    // { name: 'Home', path: '/' },
+    { name: "Home", path: "/" },
     { name: "About Us", path: "/about" },
-    {
-      name: "Membership",
-      path: "/membership",
-      // children: [
-      //   { name: "FTII Council", path: "/team?tab=council" },
-      //   { name: "Office Bearers In States", path: "/team?tab=office_bearers" },
-      //   { name: "State Presidents", path: "/team?tab=state_presidents" },
-      //   { name: "Honorary Consultants", path: "/team?tab=consultants" },
-      //   { name: "FTII Patrons", path: "/team?tab=patrons" },
-      //   { name: "National Vice-Presidents", path: "/team?tab=vice_presidents" },
-      //   { name: "Advisory Committee", path: "/team?tab=advisory" },
-      //   { name: "National Secretary", path: "/team?tab=secretary" },
-      //   { name: "Convener", path: "/team?tab=convener" },
-      // ],
-    },
+    { name: "Membership", path: "/membership" },
     { name: "Services", path: "/services" },
-    {
-      name: "International Forum",
-      path: "/international",
-      // children: [
-      //   {
-      //     name: "International Director",
-      //     path: "/team?tab=international_director",
-      //   },
-      //   {
-      //     name: "Chairman Int. Council",
-      //     path: "/team?tab=international_chairman",
-      //   },
-      // ],
-    },
-    // { name: "Opinionator", path: "/opinionator" },
-    // {
-    //   name: "YLF",
-    //   path: "/ylf",
-    //   children: [
-    //     { name: "Odisha", path: "/team?tab=ylf_odisha" },
-    //     { name: "Jammu and Kashmir", path: "/team?tab=ylf_jk" },
-    //   ],
-    // },
-    // {
-    //   name: "EWEF",
-    //   path: "/ewef",
-    //   children: [
-    //     { name: "Chair Persons of EWEF", path: "/team?tab=ewef_chairpersons" },
-    //   ],
-    // },
-    // {
-    //   name: "Media Room",
-    //   path: "/media",
-    //   children: [
-    //     { name: "Magazine Vyapar Trends", path: "/media?tab=magazine" },
-    //     { name: "Gallery", path: "/media?tab=gallery" },
-    //     { name: "Blog", path: "/media?tab=blog" },
-    //   ],
-    // },
-    // { name: "Products Promotional", path: "/products" },
+    { name: "International Forum", path: "/international" },
     { name: "Contact Us", path: "/contact" },
   ];
 
-  // const headerClass = `fixed w-full z-50 transition-all duration-300 ${
-  //   isScrolled ? "bg-white shadow-md py-1" : "bg-white shadow-sm py-1"
-  // }`;
   const headerClass = `fixed w-full z-50 transition-all duration-300 bg-white ${
     isScrolled ? "shadow-md" : "shadow-sm"
   }`;
 
-  const toggleSubmenu = (name) => {
-    if (openSubmenu === name) {
-      setOpenSubmenu(null);
-    } else {
-      setOpenSubmenu(name);
-    }
-  };
-
   return (
     <header className={headerClass}>
-      {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center">
-          <Link
-            to="/"
-            className="flex items-center space-x-3 relative z-50 group"
-          >
-            <div className="w-25 h-25 flex items-center justify-center">
-              <img
-                src={forumLogo}
-                alt="AITIF Logo"
-                className="w-20 h-20 object-contain"
-              />
-            </div>
-          </Link>
-
-          <nav className="hidden xl:flex space-x-8 items-center">
-            {navLinks.map((link) => (
-              <div key={link.name} className="relative group h-full py-2">
-                <Link
-                  to={link.path}
-                  // className={`flex items-center text-base font-semibold tracking-wide transition-colors ${
-                  //   location.pathname === link.path
-                  //     ? "text-blue-700 border-b-2 border-blue-700 pb-0.5"
-                  //     : "text-navy-900 hover:text-blue-700"
-                  // }`}
-                  className={`flex items-center text-[17px] font-serif font-bold tracking-widest uppercase transition-colors ${
-                    location.pathname === link.path
-                      ? "text-blue-800 border-b-2 border-blue-800 pb-1"
-                      : "text-slate-900 hover:text-blue-800"
-                  }`}
-                >
-                  {link.name}
-                  {link.children && (
-                    <ChevronDown
-                      size={14}
-                      className="ml-1 group-hover:rotate-180 transition-transform duration-300"
-                    />
-                  )}
-                </Link>
-
-                {link.children && (
-                  <div className="absolute left-0 top-full pt-4 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
-                    <div className="bg-white shadow-xl border-t-2 border-blue-700 rounded-b-sm py-1 flex flex-col">
-                      {link.children.map((child) => (
-                        <Link
-                          key={child.name}
-                          to={child.path}
-                          className="px-5 py-3 text-xs font-semibold text-navy-800 hover:bg-gray-50 hover:text-blue-700 border-b border-gray-100 last:border-0 uppercase tracking-wider transition-colors flex items-center justify-between group/item"
-                        >
-                          {child.name}
-                          <ChevronRight
-                            size={12}
-                            className="opacity-0 group-hover/item:opacity-100 transition-opacity text-blue-600"
-                          />
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-            {!isMemberLoggedIn && (
-              <Link
-                to="/member/login"
-                className="ml-6 px-4 py-2 rounded bg-blue-700 text-white text-sm font-bold hover:bg-blue-800"
-              >
-                Member Login
-              </Link>
-            )}
-
-            {isMemberLoggedIn && (
-              <div className="flex items-center gap-4 ml-6">
-                <Link
-                  to="/member/notifications"
-                  className="text-sm font-bold text-navy-900 hover:text-blue-700"
-                >
-                  Notifications
-                </Link>
-
-                <Link
-                  to="/member/blogs"
-                  className="text-sm font-bold text-navy-900 hover:text-blue-700"
-                >
-                  Blogs
-                </Link>
-
-                <Link
-                  to="/member/profile"
-                  className="text-sm font-bold text-navy-900 hover:text-blue-700"
-                >
-                  Profile
-                </Link>
-
-                <button
-                  onClick={() => {
-                    localStorage.removeItem("member");
-                    localStorage.removeItem("memberToken");
-                    window.location.href = "/";
-                  }}
-                  className="text-sm font-bold text-red-600 hover:text-red-700"
-                >
-                  Logout
-                </button>
-              </div>
-            )}
-          </nav>
-
-          <div className="xl:hidden relative z-50">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-navy-900"
-            >
-              {isOpen ? <X size={28} /> : <Menu size={28} />}
-            </button>
-          </div>
-        </div>
-      </div> */}
+      {/* ================= DESKTOP HEADER ================= */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-3">
         <div className="flex justify-between items-center">
-          <Link
-            to="/"
-            className="flex items-center space-x-3 relative z-50 group"
-          >
-            {/* Increased Logo Size */}
-            {/* <div className="w-32 h-32 flex items-center justify-center">
-              <img
-                src={forumLogo}
-                alt="AITIF Logo"
-                className="w-28 h-28 object-contain" // Increased from w-20 h-20 to w-28 h-28
-              />
-            </div> */}
-            <div className="flex items-center justify-center">
-              <img
-                src={forumLogo}
-                alt="AITIF Logo"
-                className="
-      w-16 h-16
-      sm:w-20 sm:h-20
-      lg:w-28 lg:h-28
-      object-contain
-    "
-              />
-            </div>
 
-            {/* Optional: Add Organization Name next to Logo on larger screens */}
-            {/* <div className="hidden lg:block">
-              <div className="text-xl font-bold text-blue-900 leading-tight">
-                All India Trade & Industries Forum
-              </div>
-              <div className="text-xs text-gray-600 font-medium">
-                Empowering Trade, Strengthening Industry
-              </div>
-            </div> */}
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-3">
+            <img
+              src={forumLogo}
+              alt="AITIF Logo"
+              className="w-16 h-16 sm:w-20 sm:h-20 lg:w-28 lg:h-28 object-contain"
+            />
           </Link>
 
+          {/* Desktop Nav */}
           <nav className="hidden xl:flex space-x-10 items-center">
-            {" "}
-            {/* Increased space-x from 8 to 10 */}
             {navLinks.map((link) => (
-              <div key={link.name} className="relative group h-full py-2">
+              <div key={link.name} className="relative group py-2">
                 <Link
                   to={link.path}
-                  className={`flex items-center text-[17px] font-serif font-bold tracking-widest uppercase transition-colors ${
+                  className={`text-[14px] font-serif font-bold tracking-widest uppercase transition-colors ${
                     location.pathname === link.path
                       ? "text-blue-800 border-b-2 border-blue-800 pb-1"
                       : "text-slate-900 hover:text-blue-800"
                   }`}
                 >
                   {link.name}
-                  {link.children && (
-                    <ChevronDown
-                      size={14}
-                      className="ml-1 group-hover:rotate-180 transition-transform duration-300"
-                    />
-                  )}
                 </Link>
-
-                {link.children && (
-                  <div className="absolute left-0 top-full pt-4 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
-                    <div className="bg-white shadow-xl border-t-2 border-blue-700 rounded-b-sm py-1 flex flex-col">
-                      {link.children.map((child) => (
-                        <Link
-                          key={child.name}
-                          to={child.path}
-                          className="px-5 py-3 text-xs font-semibold text-navy-800 hover:bg-gray-50 hover:text-blue-700 border-b border-gray-100 last:border-0 uppercase tracking-wider transition-colors flex items-center justify-between group/item"
-                        >
-                          {child.name}
-                          <ChevronRight
-                            size={12}
-                            className="opacity-0 group-hover/item:opacity-100 transition-opacity text-blue-600"
-                          />
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             ))}
-            {!isMemberLoggedIn && (
+
+            {!isMemberLoggedIn ? (
               <Link
                 to="/member/login"
                 className="ml-6 px-5 py-2.5 rounded-lg bg-blue-700 text-white text-sm font-bold hover:bg-blue-800 shadow-md hover:shadow-lg transition-all"
               >
                 Member Login
               </Link>
-            )}
-            {isMemberLoggedIn && (
+            ) : (
               <div className="flex items-center gap-4 ml-6">
-                {/* <Link
-                  to="/member/notifications"
-                  className="text-sm font-bold text-navy-900 hover:text-blue-700 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
-                >
-                  Notifications
-                </Link> */}
-
-                {/* <Link
-                  to="/member/blogs"
-                  className="text-sm font-bold text-navy-900 hover:text-blue-700 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
-                >
-                  Blogs
-                </Link> */}
-
                 <Link
                   to="/member/profile"
-                  className="text-sm font-bold text-navy-900 hover:text-blue-700 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
+                  className="text-sm font-bold text-slate-900 hover:text-blue-700 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
                 >
                   Profile
                 </Link>
 
                 <button
-                  onClick={() => {
-                    localStorage.removeItem("member");
-                    localStorage.removeItem("memberToken");
-                    window.location.href = "/";
-                  }}
+                  onClick={handleLogout}
                   className="text-sm font-bold text-red-600 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 transition-colors"
                 >
                   Logout
@@ -358,77 +541,85 @@ const Navbar = () => {
             )}
           </nav>
 
-          <div className="xl:hidden relative z-50">
+          {/* Mobile Menu Button */}
+          <div className="xl:hidden" style={{margin:"1rem"}}>
             <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-navy-900 p-2"
+              onClick={() => setIsOpen(true)}
+              className="text-slate-900 p-2"
             >
-              {isOpen ? <X size={32} /> : <Menu size={32} />}
+              <Menu size={32} />
             </button>
           </div>
         </div>
       </div>
 
-      {isOpen && (
-        // <div className="fixed inset-0 bg-white z-40 overflow-y-auto pt-24 pb-8 px-4 xl:hidden">
-        //   <div className="space-y-1">
-        <div className="fixed inset-0 bg-white z-40 xl:hidden">
-          <div className="pt-20 px-4 pb-6 max-h-screen overflow-y-auto">
-            {navLinks.map((link) => (
-              <div key={link.name}>
-                <div className="flex justify-between items-center border-b border-gray-100">
-                  <Link
-                    to={link.path}
-                    onClick={() => !link.children && setIsOpen(false)}
-                    className={`block px-4 py-4
-  text-lg font-semibold
-  text-slate-900
-  active:bg-blue-50 ${location.pathname === link.path ? "text-blue-700" : ""}`}
-                  >
-                    {link.name}
-                  </Link>
-                  {link.children && (
-                    <button
-                      onClick={() => toggleSubmenu(link.name)}
-                      className="p-4 text-gray-500"
-                    >
-                      <ChevronDown
-                        size={20}
-                        className={`transform transition-transform ${
-                          openSubmenu === link.name ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-                  )}
-                </div>
+      {/* ================= MOBILE DRAWER ================= */}
 
-                {link.children && openSubmenu === link.name && (
-                  <div className="bg-gray-50">
-                    {link.children.map((child) => (
-                      <Link
-                        key={child.name}
-                        to={child.path}
-                        onClick={() => setIsOpen(false)}
-                        className="block px-6 py-3 text-xs font-semibold text-gray-600 hover:text-blue-700 uppercase tracking-wide border-b border-gray-100 last:border-0"
-                      >
-                        {child.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-            {!isMemberLoggedIn && (
-              <Link
-                to="/member/login"
-                className="ml-6 px-4 py-2 rounded bg-blue-700 text-white text-sm font-bold hover:bg-blue-800"
-              >
-                Member Login
-              </Link>
-            )}
-          </div>
-        </div>
+      {/* Overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-[55] xl:hidden"
+          onClick={() => setIsOpen(false)}
+        />
       )}
+
+      {/* Drawer */}
+      <div
+        className={`fixed top-0 right-0 h-full w-[80%] max-w-sm bg-white shadow-2xl z-[60] transform transition-transform duration-300 xl:hidden ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {/* Close Button */}
+        <div className="flex justify-end p-4" style={{margin:"1rem"}}>
+          <button onClick={() => setIsOpen(false)}>
+            <X size={28} />
+          </button>
+        </div>
+
+        <div className="px-6 pb-6 overflow-y-auto h-full">
+          {navLinks.map((link) => (
+            <Link
+              key={link.name}
+              to={link.path}
+              className={`block py-4 text-base font-semibold border-b border-gray-100 ${
+                location.pathname === link.path
+                  ? "text-blue-700"
+                  : "text-slate-900"
+              }`}
+            >
+              {link.name}
+            </Link>
+          ))}
+
+          {/* ===== MEMBER SECTION (Mobile) ===== */}
+          {!isMemberLoggedIn ? (
+            <Link
+              to="/member/login"
+              className="block mt-6 w-full text-center px-4 py-3 rounded-lg bg-blue-700 text-white text-sm font-bold hover:bg-blue-800"
+            >
+              Member Login
+            </Link>
+          ) : (
+            <div className="mt-6 space-y-3">
+
+              <Link
+                to="/member/profile"
+                className="block w-full text-center px-4 py-3 rounded-lg bg-blue-50 text-blue-700 font-semibold hover:bg-blue-100"
+              >
+                Profile
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                className="block w-full px-4 py-3 rounded-lg bg-red-50 text-red-600 font-semibold hover:bg-red-100"
+              >
+                Logout
+              </button>
+
+            </div>
+          )}
+        </div>
+      </div>
     </header>
   );
 };
