@@ -262,7 +262,7 @@
 //                       </span>
 //                     )}
 //                   </Link>
-                  
+
 //                   <button
 //                     onClick={() => handleViewCertificate(member)}
 //                     className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 text-white text-sm font-medium rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200"
@@ -290,7 +290,7 @@
 //                   <ExternalLink className="h-3 w-3" />
 //                 </Link>
 //               </div>
-              
+
 //               {notificationCount > 0 ? (
 //                 <div className="space-y-4">
 //                   <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
@@ -302,7 +302,7 @@
 //                     </p>
 //                     <p className="text-xs text-gray-400 mt-2">2 hours ago</p>
 //                   </div>
-                  
+
 //                   <div className="p-3 bg-green-50 rounded-lg border border-green-100">
 //                     <p className="text-sm font-medium text-gray-900">
 //                       Payment received
@@ -312,7 +312,7 @@
 //                     </p>
 //                     <p className="text-xs text-gray-400 mt-2">1 day ago</p>
 //                   </div>
-                  
+
 //                   <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
 //                     <p className="text-sm font-medium text-gray-900">
 //                       Membership renewal reminder
@@ -332,7 +332,7 @@
 //                   </p>
 //                 </div>
 //               )}
-              
+
 //               <div className="mt-6 pt-6 border-t border-gray-200">
 //                 <Link
 //                   to="/member/notification"
@@ -397,13 +397,12 @@ export default function MemberProfile() {
   const [notificationCount, setNotificationCount] = useState(0);
 
   /* ---------------- REFERRAL LINK ---------------- */
-            // const referralLink = `http://localhost:3000/membership-registration/${member?.userId}`;
+  // const referralLink = `http://localhost:3000/membership-registration/${member?.userId}`;
   // const referralLink = `https://test.aitif.in/membership-registration/${member?.userId}`;
   const referralLink = `https://aitif.in/membership-registration/${member?.userId}`;
 
- 
   /* ---------------- VIEW CERTIFICATE ---------------- */
-       const handleViewCertificate = (member) => {
+  const handleViewCertificate = (member) => {
     console.log("member info", member);
     window.open(
       // `http://localhost:8000/member/auth/user/certificate/${member?._id}`,
@@ -468,7 +467,6 @@ export default function MemberProfile() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-6 sm:py-8 px-4 mt-5">
       <div className="max-w-5xl mx-auto">
-
         {/* ================= HEADER ================= */}
         {/* Fixed: Stacks vertically on mobile */}
         <div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
@@ -491,14 +489,11 @@ export default function MemberProfile() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
-
           {/* ================= MAIN PROFILE CARD ================= */}
           <div className="lg:w-2/3 w-full">
             <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-6 md:p-8">
-
               {/* Profile Header - Stacks on mobile */}
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6 mb-8">
-
                 <div className="flex items-center space-x-4">
                   <div className="h-14 w-14 sm:h-16 sm:w-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-lg sm:text-xl font-bold">
                     {member.companyName?.charAt(0) || "M"}
@@ -526,7 +521,6 @@ export default function MemberProfile() {
               {/* ================= PROFILE GRID ================= */}
               {/* Fixed: Better spacing + overflow handling */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-
                 <ProfileItem
                   icon={<Building className="h-5 w-5" />}
                   label="Company Name"
@@ -620,7 +614,6 @@ export default function MemberProfile() {
                     </span>
                   </div>
                 </Link>
-
               </div>
             </div>
           </div>

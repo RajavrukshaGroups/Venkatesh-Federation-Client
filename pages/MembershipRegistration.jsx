@@ -573,6 +573,16 @@ const MembershipRegistration = () => {
             className="space-y-10 text-lg font-bold"
           >
             {/* COMPANY NAME */}
+            {referrerId && referrerCompany && (
+              <div className="flex flex-col md:flex-row gap-4">
+                <span className="md:w-1/3">REFERRED BY</span>
+                <input
+                  value={`${referrerCompany}`}
+                  readOnly
+                  className="flex-1 border-b-2 border-dotted bg-gray-100 px-2 uppercase"
+                />
+              </div>
+            )}
             <div className="flex flex-col md:flex-row gap-4">
               <span className="md:w-1/3">1. COMPANY NAME</span>
               <input
@@ -681,6 +691,22 @@ const MembershipRegistration = () => {
               />
             </div>
 
+            {/* EMAIL */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <span className="md:w-1/3">5. EMAIL</span>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setErrors((prev) => ({ ...prev, email: null }));
+                }}
+                className={`border h-10 px-2 flex-1 ${
+                  errors.email ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+            </div>
+
             {/* BUSINESS TYPE */}
             {/* <div
               className={`flex flex-col md:flex-row gap-8 ${
@@ -714,7 +740,7 @@ const MembershipRegistration = () => {
             </div> */}
             {/* BUSINESS NATURE */}
             <div className="flex flex-col gap-6">
-              <span className="font-bold">5. BUSINESS NATURE</span>
+              <span className="font-bold">6. BUSINESS NATURE</span>
 
               {/* Manufacturer */}
               <label className="flex items-center gap-2">
@@ -805,7 +831,7 @@ const MembershipRegistration = () => {
 
             {/* BUSINESS CATEGORY */}
             <div className="flex flex-col md:flex-row gap-4">
-              <span className="md:w-1/3">6. BUSINESS CATEGORY</span>
+              <span className="md:w-1/3">7. BUSINESS CATEGORY</span>
               <div className="flex-1">
                 {/* <Select
                   options={categoryOptions}
@@ -877,9 +903,219 @@ const MembershipRegistration = () => {
               </div>
             </div>
 
+            {/* <div className="flex flex-col md:flex-row gap-4">
+              <span className="md:w-1/3">7. SELECT MEMBERSHIP PLAN</span>
+              <div className="flex-1">
+                <Select
+                  options={planOptions}
+                  isLoading={planLoading}
+                  placeholder="Select a membership plan"
+                  onChange={handlePlanChange}
+                  value={selectedPlanOption || null} // ✅ FIXED
+                  formatOptionLabel={({ data }) => renderPlanOption(data)}
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      backgroundColor: "white",
+                      border: "none",
+                      borderBottom: errors.selectedPlan
+                        ? "2px solid #ef4444"
+                        : "2px dotted #000",
+                      borderRadius: 0,
+                      boxShadow: "none",
+                      minHeight: "44px",
+                    }),
+                    menu: (base) => ({ ...base, zIndex: 9999 }),
+                  }}
+                />
+
+                {errors.selectedPlan && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.selectedPlan}
+                  </p>
+                )}
+
+                {showPlanBenefits && selectedPlan && (
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="font-semibold text-blue-900">
+                        {selectedPlan.name} Plan Details
+                      </h4>
+                      <span className="font-bold text-blue-700">
+                        {formatCurrency(selectedPlan.amount)}
+                        {selectedPlan.durationInDays
+                          ? ` / ${selectedPlan.durationInDays} days`
+                          : " / Lifetime"}
+                      </span>
+                    </div>
+
+                    {selectedPlan.description && (
+                      <p className="text-gray-700 mb-3">
+                        {selectedPlan.description}
+                      </p>
+                    )}
+
+                    {selectedPlanBenefits.length > 0 && (
+                      <div>
+                        <h5 className="font-medium text-gray-800 mb-2">
+                          Benefits Included:
+                        </h5>
+                        <ul className="space-y-1">
+                          {selectedPlanBenefits.map((benefit, index) => (
+                            <li key={index} className="flex items-start">
+                              <span className="text-green-600 mr-2">✓</span>
+                              <span className="text-gray-700">
+                                {benefit.title}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div> */}
+
+            {/* MAJOR COMMODITY */}
+            <div className="flex flex-col gap-2">
+              <span>8. MAJOR COMMODITY</span>
+              <input
+                value={majorCommodities[0]}
+                onChange={(e) => {
+                  setMajorCommodities([e.target.value, majorCommodities[1]]);
+                  setErrors((prev) => ({ ...prev, majorCommodities: null }));
+                }}
+                className={`border h-10 px-2 uppercase ${
+                  errors.majorCommodities ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+
+              <input
+                value={majorCommodities[1]}
+                onChange={(e) => {
+                  setMajorCommodities([majorCommodities[0], e.target.value]);
+                  setErrors((prev) => ({ ...prev, majorCommodities: null }));
+                }}
+                className={`border h-10 px-2 uppercase ${
+                  errors.majorCommodities ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+            </div>
+
+            {/* GST */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <span className="md:w-1/3">9. GST NO</span>
+              <input
+                value={gstNumber}
+                onChange={(e) => {
+                  setGstNumber(e.target.value.toUpperCase());
+                  setErrors((prev) => ({ ...prev, gstNumber: null }));
+                }}
+                maxLength={15}
+                className={`border h-10 px-2 uppercase ${
+                  errors.gstNumber ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+            </div>
+
+            {/* BANK DETAILS */}
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={skipBankDetails}
+                onChange={(e) => {
+                  setSkipBankDetails(e.target.checked);
+
+                  if (e.target.checked) {
+                    setBankName("");
+                    setAccountNumber("");
+                    setIfscCode("");
+                  }
+                }}
+              />
+              <span className="text-sm font-medium">Skip Bank Details</span>
+            </div>
+            <div className="flex flex-col gap-6">
+              <span>10. BANK DETAILS (FOR MONEY BACK OFFER)</span>
+
+              {/* <div className="flex flex-col md:flex-row gap-4">
+                <span className="md:w-1/3">BANK NAME</span>
+                <input
+                  value={bankName}
+                  onChange={(e) => {
+                    setBankName(e.target.value);
+                    setErrors((prev) => ({ ...prev, bankName: null }));
+                  }}
+                  className={`flex-1 border-b-2 px-2 uppercase ${
+                    errors.bankName ? "border-red-500" : "border-dotted"
+                  }`}
+                />
+              </div>
+
+              <div className="flex flex-col md:flex-row gap-4">
+                <span className="md:w-1/3">A/C NO</span>
+                <input
+                  value={accountNumber}
+                  onChange={(e) => {
+                    setAccountNumber(e.target.value.replace(/\D/g, ""));
+                    setErrors((prev) => ({ ...prev, accountNumber: null }));
+                  }}
+                  className={`flex-1 border-b-2 px-2 ${
+                    errors.accountNumber ? "border-red-500" : "border-dotted"
+                  }`}
+                />
+              </div>
+
+              <div className="flex flex-col md:flex-row gap-4">
+                <span className="md:w-1/3">IFSC CODE</span>
+                <input
+                  value={ifscCode}
+                  onChange={(e) => {
+                    setIfscCode(e.target.value.toUpperCase());
+                    setErrors((prev) => ({ ...prev, ifscCode: null }));
+                  }}
+                  maxLength={11}
+                  className={`flex-1 border-b-2 px-2 uppercase ${
+                    errors.ifscCode ? "border-red-500" : "border-dotted"
+                  }`}
+                />
+              </div> */}
+              {!skipBankDetails && (
+                <>
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <span className="md:w-1/3">BANK NAME</span>
+                    <input
+                      value={bankName}
+                      onChange={(e) => setBankName(e.target.value)}
+                      className="flex-1 border-b-2 border-dotted px-2"
+                    />
+                  </div>
+
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <span className="md:w-1/3">A/C NO</span>
+                    <input
+                      value={accountNumber}
+                      onChange={(e) => setAccountNumber(e.target.value)}
+                      className="flex-1 border-b-2 border-dotted px-2"
+                    />
+                  </div>
+
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <span className="md:w-1/3">IFSC CODE</span>
+                    <input
+                      value={ifscCode}
+                      onChange={(e) => setIfscCode(e.target.value)}
+                      className="flex-1 border-b-2 border-dotted px-2"
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+
             {/* MEMBERSHIP PLAN SELECTION */}
             <div className="flex flex-col md:flex-row gap-4">
-              <span className="md:w-1/3">7. SELECT MEMBERSHIP PLAN</span>
+              <span className="md:w-1/3">11. SELECT MEMBERSHIP PLAN</span>
               <div className="flex-1">
                 <Select
                   options={planOptions}
@@ -955,7 +1191,7 @@ const MembershipRegistration = () => {
 
             {/* MEMBERSHIP AMOUNT (Auto-filled) */}
             <div className="flex flex-col md:flex-row gap-4">
-              <span className="md:w-1/3">8. MEMBERSHIP AMOUNT</span>
+              <span className="md:w-1/3">12. MEMBERSHIP AMOUNT</span>
               <div className="flex-1">
                 <input
                   type="text"
@@ -972,169 +1208,6 @@ const MembershipRegistration = () => {
                   Amount will be auto-filled based on selected plan
                 </p>
               </div>
-            </div>
-
-            {/* MAJOR COMMODITY */}
-            <div className="flex flex-col gap-2">
-              <span>9. MAJOR COMMODITY</span>
-              <input
-                value={majorCommodities[0]}
-                onChange={(e) => {
-                  setMajorCommodities([e.target.value, majorCommodities[1]]);
-                  setErrors((prev) => ({ ...prev, majorCommodities: null }));
-                }}
-                className={`border h-10 px-2 uppercase ${
-                  errors.majorCommodities ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-
-              <input
-                value={majorCommodities[1]}
-                onChange={(e) => {
-                  setMajorCommodities([majorCommodities[0], e.target.value]);
-                  setErrors((prev) => ({ ...prev, majorCommodities: null }));
-                }}
-                className={`border h-10 px-2 uppercase ${
-                  errors.majorCommodities ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-            </div>
-
-            {/* GST */}
-            <div className="flex flex-col md:flex-row gap-4">
-              <span className="md:w-1/3">10. GST NO</span>
-              <input
-                value={gstNumber}
-                onChange={(e) => {
-                  setGstNumber(e.target.value.toUpperCase());
-                  setErrors((prev) => ({ ...prev, gstNumber: null }));
-                }}
-                maxLength={15}
-                className={`border h-10 px-2 uppercase ${
-                  errors.gstNumber ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-            </div>
-
-            {/* EMAIL */}
-            <div className="flex flex-col md:flex-row gap-4">
-              <span className="md:w-1/3">11. EMAIL</span>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setErrors((prev) => ({ ...prev, email: null }));
-                }}
-                className={`border h-10 px-2 flex-1 ${
-                  errors.email ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-            </div>
-
-            {referrerId && referrerCompany && (
-              <div className="flex flex-col md:flex-row gap-4">
-                <span className="md:w-1/3">12. REFERRED BY</span>
-                <input
-                  value={`${referrerCompany}`}
-                  readOnly
-                  className="flex-1 border-b-2 border-dotted bg-gray-100 px-2 uppercase"
-                />
-              </div>
-            )}
-
-            {/* BANK DETAILS */}
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                checked={skipBankDetails}
-                onChange={(e) => {
-                  setSkipBankDetails(e.target.checked);
-
-                  if (e.target.checked) {
-                    setBankName("");
-                    setAccountNumber("");
-                    setIfscCode("");
-                  }
-                }}
-              />
-              <span className="text-sm font-medium">Skip Bank Details</span>
-            </div>
-            <div className="flex flex-col gap-6">
-              <span>13. BANK DETAILS (FOR MONEY BACK OFFER)</span>
-
-              {/* <div className="flex flex-col md:flex-row gap-4">
-                <span className="md:w-1/3">BANK NAME</span>
-                <input
-                  value={bankName}
-                  onChange={(e) => {
-                    setBankName(e.target.value);
-                    setErrors((prev) => ({ ...prev, bankName: null }));
-                  }}
-                  className={`flex-1 border-b-2 px-2 uppercase ${
-                    errors.bankName ? "border-red-500" : "border-dotted"
-                  }`}
-                />
-              </div>
-
-              <div className="flex flex-col md:flex-row gap-4">
-                <span className="md:w-1/3">A/C NO</span>
-                <input
-                  value={accountNumber}
-                  onChange={(e) => {
-                    setAccountNumber(e.target.value.replace(/\D/g, ""));
-                    setErrors((prev) => ({ ...prev, accountNumber: null }));
-                  }}
-                  className={`flex-1 border-b-2 px-2 ${
-                    errors.accountNumber ? "border-red-500" : "border-dotted"
-                  }`}
-                />
-              </div>
-
-              <div className="flex flex-col md:flex-row gap-4">
-                <span className="md:w-1/3">IFSC CODE</span>
-                <input
-                  value={ifscCode}
-                  onChange={(e) => {
-                    setIfscCode(e.target.value.toUpperCase());
-                    setErrors((prev) => ({ ...prev, ifscCode: null }));
-                  }}
-                  maxLength={11}
-                  className={`flex-1 border-b-2 px-2 uppercase ${
-                    errors.ifscCode ? "border-red-500" : "border-dotted"
-                  }`}
-                />
-              </div> */}
-              {!skipBankDetails && (
-                <>
-                  <div className="flex flex-col md:flex-row gap-4">
-                    <span className="md:w-1/3">BANK NAME</span>
-                    <input
-                      value={bankName}
-                      onChange={(e) => setBankName(e.target.value)}
-                      className="flex-1 border-b-2 border-dotted px-2"
-                    />
-                  </div>
-
-                  <div className="flex flex-col md:flex-row gap-4">
-                    <span className="md:w-1/3">A/C NO</span>
-                    <input
-                      value={accountNumber}
-                      onChange={(e) => setAccountNumber(e.target.value)}
-                      className="flex-1 border-b-2 border-dotted px-2"
-                    />
-                  </div>
-
-                  <div className="flex flex-col md:flex-row gap-4">
-                    <span className="md:w-1/3">IFSC CODE</span>
-                    <input
-                      value={ifscCode}
-                      onChange={(e) => setIfscCode(e.target.value)}
-                      className="flex-1 border-b-2 border-dotted px-2"
-                    />
-                  </div>
-                </>
-              )}
             </div>
 
             {/* SUBMIT */}
