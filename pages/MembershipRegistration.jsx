@@ -370,7 +370,7 @@ const MembershipRegistration = () => {
       newErrors.selectedPlan = "Please select a membership plan";
 
     if (!majorCommodities.some((c) => c.trim())) {
-      newErrors.majorCommodities = "At least one major commodity is required";
+      newErrors.majorCommodities = "At least one major commodity or services is required";
     }
 
     // GST
@@ -1047,7 +1047,7 @@ const MembershipRegistration = () => {
 
             {/* MAJOR COMMODITY */}
             <div className="flex flex-col gap-2">
-              <span>8. MAJOR COMMODITY</span>
+              <span>8. MAJOR COMMODITY OR SERVICES</span>
               <input
                 value={majorCommodities[0]}
                 onChange={(e) => {
