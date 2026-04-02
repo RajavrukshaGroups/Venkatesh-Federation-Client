@@ -49,6 +49,12 @@ const MembershipRegistration = () => {
       isTrader: false,
       type: [],
     },
+    professional: {
+      isProfessional: false,
+    },
+    other: {
+      isOther: false,
+    },
   });
 
   const [bankName, setBankName] = useState("");
@@ -112,9 +118,22 @@ const MembershipRegistration = () => {
         const response = await api.get(
           "/admin/businessplans/view-membershipplans/regform",
         );
-        console.log("response", response);
+
         if (response.success) {
-          setMembershipPlans(response.data || []);
+          const plans = response.data || [];
+          setMembershipPlans(plans);
+
+          // ✅ AUTO SELECT MAX AMOUNT PLAN
+          if (plans.length > 0) {
+            const maxPlan = plans.reduce((prev, curr) =>
+              curr.amount > prev.amount ? curr : prev,
+            );
+
+            setSelectedPlan(maxPlan);
+            setMembershipAmount(Number(maxPlan.amount));
+            setSelectedPlanBenefits(maxPlan.benefits || []);
+            setShowPlanBenefits(true);
+          }
         } else {
           toast.error("Failed to load membership plans");
         }
@@ -302,9 +321,11 @@ const MembershipRegistration = () => {
 ========================= */
     const isManufacturer = businessNature.manufacturer.isManufacturer;
     const isTrader = businessNature.trader.isTrader;
+    const isProfessional = businessNature.professional.isProfessional;
+    const isOther = businessNature.other.isOther;
 
-    if (!isManufacturer && !isTrader) {
-      newErrors.businessNature = "Please select Manufacturer and/or Trader";
+    if (!isManufacturer && !isTrader && !isProfessional && !isOther) {
+      newErrors.businessNature = "Please select at least one business nature";
     }
 
     if (isManufacturer && businessNature.manufacturer.scale.length === 0) {
@@ -353,6 +374,13 @@ const MembershipRegistration = () => {
     }
 
     // GST
+
+    // ✅ GST REQUIRED for Manufacturer / Trader
+    if ((isManufacturer || isTrader) && !gstNumber) {
+      newErrors.gstNumber = "GST is required for Manufacturer / Trader";
+    }
+
+    // ✅ If GST entered → validate format (for everyone)
     if (gstNumber) {
       if (gstNumber.length !== 15)
         newErrors.gstNumber = "GST must be 15 characters";
@@ -413,6 +441,12 @@ const MembershipRegistration = () => {
       trader: {
         isTrader: false,
         type: [],
+      },
+      professional: {
+        isProfessional: false,
+      },
+      other: {
+        isOther: false,
       },
     });
 
@@ -827,6 +861,40 @@ const MembershipRegistration = () => {
                   </label>
                 </div>
               )}
+
+              {/* PROFESSIONAL */}
+              <label className="flex items-center gap-2 mt-4">
+                <input
+                  type="checkbox"
+                  checked={businessNature.professional?.isProfessional}
+                  onChange={(e) =>
+                    setBusinessNature((prev) => ({
+                      ...prev,
+                      professional: {
+                        isProfessional: e.target.checked,
+                      },
+                    }))
+                  }
+                />
+                PROFESSIONAL
+              </label>
+
+              {/* OTHERS */}
+              <label className="flex items-center gap-2 mt-2">
+                <input
+                  type="checkbox"
+                  checked={businessNature.other?.isOther}
+                  onChange={(e) =>
+                    setBusinessNature((prev) => ({
+                      ...prev,
+                      other: {
+                        isOther: e.target.checked,
+                      },
+                    }))
+                  }
+                />
+                OTHERS
+              </label>
             </div>
 
             {/* BUSINESS CATEGORY */}

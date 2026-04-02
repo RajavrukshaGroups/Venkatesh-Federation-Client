@@ -395,6 +395,7 @@ export default function MemberProfile() {
   const [member, setMember] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [notificationCount, setNotificationCount] = useState(0);
+  console.log("member logs", member);
 
   /* ---------------- REFERRAL LINK ---------------- */
   // const referralLink = `http://localhost:3000/membership-registration/${member?.userId}`;
@@ -558,20 +559,22 @@ export default function MemberProfile() {
                   className="bg-green-50"
                 />
 
-                <ProfileItem
-                  icon={<File className="h-5 w-5" />}
-                  label="Certificate"
-                  value={
-                    <button
-                      onClick={() => handleViewCertificate(member)}
-                      className="text-blue-600 hover:underline font-medium flex items-center gap-1 text-sm"
-                    >
-                      View Certificate
-                      <ExternalLink className="h-3 w-3" />
-                    </button>
-                  }
-                  className="bg-purple-50"
-                />
+                {member?.membershipPlan !== "BASIC MEMBERSHIP PLAN" && (
+                  <ProfileItem
+                    icon={<File className="h-5 w-5" />}
+                    label="Certificate"
+                    value={
+                      <button
+                        onClick={() => handleViewCertificate(member)}
+                        className="text-blue-600 hover:underline font-medium flex items-center gap-1 text-sm"
+                      >
+                        View Certificate
+                        <ExternalLink className="h-3 w-3" />
+                      </button>
+                    }
+                    className="bg-purple-50"
+                  />
+                )}
 
                 {/* Referral Link - FIXED MOBILE WRAP */}
                 <ProfileItem
