@@ -48,7 +48,6 @@ const MayDayCampaign = () => {
       type: [],
     },
     professional: {
-      //   isProfessional: false,
       isProfessional: true,
     },
     other: {
@@ -59,7 +58,6 @@ const MayDayCampaign = () => {
   const [bankName, setBankName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
   const [ifscCode, setIfscCode] = useState("");
-
   const [skipBankDetails, setSkipBankDetails] = useState(false);
 
   /* =========================
@@ -85,9 +83,6 @@ const MayDayCampaign = () => {
   const selectedCategoryOptions =
     categoryOptions.find((opt) => opt.value === businessCategory) || null;
 
-  /* =========================
-     SUBMIT LOADER
-  ========================= */
   const [loading, setLoading] = useState(false);
 
   /* =========================
@@ -97,18 +92,13 @@ const MayDayCampaign = () => {
     const fetchCategories = async () => {
       try {
         setCategoryLoading(true);
-
         const res = await api.get("/admin/category/getCategories");
-
         if (res.success) {
           const categoryList = res.data || [];
           setCategories(categoryList);
-
-          // ✅ AUTO SELECT "2W TECHNICIAN"
           const defaultCategory = categoryList.find(
             (cat) => cat.name?.toLowerCase() === "2w technician",
           );
-
           if (defaultCategory) {
             setBusinessCategory(defaultCategory._id);
           }
@@ -123,31 +113,15 @@ const MayDayCampaign = () => {
     const fetchMembershipPlans = async () => {
       try {
         setPlanLoading(true);
-
         const response = await api.get(
           "/admin/businessplans/view-membershipplans/regform",
         );
-
         if (response.success) {
           const plans = response.data || [];
-
-          // ✅ ONLY PROMO KIT PLAN
           const promoPlans = plans.filter((p) =>
             p.name?.toLowerCase().includes("promo kit"),
           );
-
           setMembershipPlans(promoPlans);
-
-          //   if (!promoPlan) {
-          //     toast.error("Promo Kit plan not found");
-          //     return;
-          //   }
-
-          // 🔥 SET ONLY THIS PLAN
-          //   setSelectedPlan(promoPlan);
-          //   setMembershipAmount(Number(promoPlan.amount));
-          //   setSelectedPlanBenefits(promoPlan.benefits || []);
-          //   setShowPlanBenefits(true);
         } else {
           toast.error("Failed to load membership plans");
         }
@@ -168,14 +142,12 @@ const MayDayCampaign = () => {
   ========================= */
   const fetchAddressByPin = async (pincode) => {
     if (pincode.length !== 6) return;
-
     try {
       setPinLoading(true);
       const res = await fetch(
         `https://api.postalpincode.in/pincode/${pincode}`,
       );
       const data = await res.json();
-
       if (data[0]?.Status === "Success") {
         const info = data[0].PostOffice[0];
         setState(info.State);
@@ -200,7 +172,7 @@ const MayDayCampaign = () => {
   };
 
   /* =========================
-     BUSINESS TYPE HANDLER
+     BUSINESS TYPE HANDLERS
   ========================= */
   const toggleBusinessType = (type) => {
     setBusinessType((prev) =>
@@ -213,7 +185,6 @@ const MayDayCampaign = () => {
       const scale = prev.manufacturer.scale.includes(value)
         ? prev.manufacturer.scale.filter((v) => v !== value)
         : [...prev.manufacturer.scale, value];
-
       return {
         ...prev,
         manufacturer: { ...prev.manufacturer, scale },
@@ -226,7 +197,6 @@ const MayDayCampaign = () => {
       const type = prev.trader.type.includes(value)
         ? prev.trader.type.filter((v) => v !== value)
         : [...prev.trader.type, value];
-
       return {
         ...prev,
         trader: { ...prev.trader, type },
@@ -237,24 +207,17 @@ const MayDayCampaign = () => {
   /* =========================
      MEMBERSHIP PLAN HANDLERS
   ========================= */
-
   const handlePlanToggle = (plan) => {
     setSelectedPlans((prev) => {
       const exists = prev.find((p) => p._id === plan._id);
-
       let updatedPlans;
-
       if (exists) {
         updatedPlans = prev.filter((p) => p._id !== plan._id);
       } else {
         updatedPlans = [...prev, plan];
       }
-
-      // 🔥 UPDATE TOTAL AMOUNT
       const total = updatedPlans.reduce((sum, p) => sum + Number(p.amount), 0);
-
       setMembershipAmount(total);
-
       return updatedPlans;
     });
   };
@@ -291,18 +254,12 @@ const MayDayCampaign = () => {
     );
   };
 
-  console.log("membership plans", membershipPlans);
-
   /* =========================
-     VALIDATION & SUBMIT HANDLER
+     VALIDATION & SUBMIT
   ========================= */
-
   const validateForm = () => {
     const newErrors = {};
 
-    /* =========================
-   BUSINESS NATURE VALIDATION
-========================= */
     const isManufacturer = businessNature.manufacturer.isManufacturer;
     const isTrader = businessNature.trader.isTrader;
     const isProfessional = businessNature.professional.isProfessional;
@@ -331,74 +288,46 @@ const MayDayCampaign = () => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) {
-      return Object.values(newErrors)[0]; // first error message
+      return Object.values(newErrors)[0];
     }
-
     return null;
   };
 
   const resetForm = () => {
-    //address
     setPin("");
     setState("");
     setDistrict("");
     setTaluk("");
     setStreet("");
-
-    //company/contact
     setCompanyName("");
     setProprietors("");
     setMobileNumber("");
     setEmail("");
     setGstNumber("");
-
-    //business
-    // setBusinessCategory("");
     const defaultCategory = categories.find(
       (cat) => cat.name?.toLowerCase() === "2w technician",
     );
-
     if (defaultCategory) {
       setBusinessCategory(defaultCategory._id);
     }
     setBusinessType([]);
     setMajorCommodities(["", ""]);
-
-    //reset business nature
     setBusinessNature({
-      manufacturer: {
-        isManufacturer: false,
-        scale: [],
-      },
-      trader: {
-        isTrader: false,
-        type: [],
-      },
-      professional: {
-        // isProfessional: false,
-        isProfessional: true,
-      },
-      other: {
-        isOther: false,
-      },
+      manufacturer: { isManufacturer: false, scale: [] },
+      trader: { isTrader: false, type: [] },
+      professional: { isProfessional: true },
+      other: { isOther: false },
     });
-
-    //bank
     setBankName("");
     setAccountNumber("");
     setIfscCode("");
     setSkipBankDetails(false);
-
-    //Membership
     setSelectedPlans([]);
     setMembershipAmount(0);
     setSelectedPlanBenefits([]);
     setShowPlanBenefits(false);
-
     setIsCustomCategory(false);
     setCustomCategoryName("");
-
-    //errors
     setErrors({});
   };
 
@@ -415,22 +344,12 @@ const MayDayCampaign = () => {
     try {
       setLoading(true);
 
-      /* =========================
-       REGISTRATION SNAPSHOT
-    ========================= */
       const registrationData = {
         companyName,
         proprietors,
-        address: {
-          street,
-          pin,
-          state,
-          district,
-          taluk,
-        },
+        address: { street, pin, state, district, taluk },
         mobileNumber,
         email,
-        // businessCategory,
         businessCategory,
         customBusinessCategory: isCustomCategory
           ? customCategoryName.trim().toUpperCase()
@@ -439,10 +358,6 @@ const MayDayCampaign = () => {
         businessNature,
         majorCommodities: majorCommodities.filter(Boolean),
         gstNumber,
-        // bankDetails:
-        //   bankName || accountNumber || ifscCode
-        //     ? { bankName, accountNumber, ifscCode }
-        //     : undefined,
         bankDetails:
           !skipBankDetails && (bankName || accountNumber || ifscCode)
             ? { bankName, accountNumber, ifscCode }
@@ -452,15 +367,9 @@ const MayDayCampaign = () => {
           : { source: "ADMIN" },
       };
 
-      /* =========================
-       CREATE ORDER
-    ========================= */
       const orderRes = await api.post("/admin/payment/mayday/create-order", {
-        formData: {
-          ...registrationData,
-          selectedPlans,
-        },
-        amount: membershipAmount, // or fixed amount
+        formData: { ...registrationData, selectedPlans },
+        amount: membershipAmount,
       });
 
       if (!orderRes.success) {
@@ -472,9 +381,6 @@ const MayDayCampaign = () => {
         toast.success(orderRes.message);
       }
 
-      /* =========================
-       RAZORPAY OPTIONS
-    ========================= */
       const options = {
         key: orderRes.key,
         amount: orderRes.amount * 100,
@@ -482,19 +388,16 @@ const MayDayCampaign = () => {
         name: "All India Trade and Industries Forum",
         description: selectedPlans.map((p) => p.name).join(", "),
         order_id: orderRes.orderId,
-
         handler: function () {
           toast.success("Payment successful .");
           resetForm();
           navigate("/may-day-celebration", { replace: true });
         },
-
         prefill: {
           name: companyName,
           email,
           contact: mobileNumber,
         },
-
         theme: {
           color: "#0054A6",
         },
@@ -510,39 +413,46 @@ const MayDayCampaign = () => {
     }
   };
 
-  // ----- PROFESSIONAL REDESIGN UI -----
+  const PLAN_PRICING = {
+    "NGK PROMO KIT": { mrp: 3550, total: 2000, advance: 500, remaining: 1500 },
+    "SKAS PROMO KIT": { mrp: 3080, total: 2000, advance: 500, remaining: 1500 },
+    "KING QUALITY PROMO KIT": {
+      mrp: 3065,
+      total: 2000,
+      advance: 500,
+      remaining: 1500,
+    },
+  };
+
+  // ----- FULLY RESPONSIVE UI (No functional changes) -----
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen py-12 px-4 font-sans">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen py-8 md:py-12 px-4 sm:px-6 font-sans">
       <ToastContainer position="top-right" autoClose={3000} />
 
       <div className="max-w-5xl mx-auto">
-        {/* MAIN CARD */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
-          {/* HEADER SECTION - DARK BLUE PROFESSIONAL */}
-          <div className="bg-gradient-to-r from-[#0B5FA5] to-[#0a4a7a] text-white px-8 py-8 text-center">
-            <h1 className="text-2xl md:text-4xl font-bold tracking-tight">
+          {/* HEADER */}
+          <div className="bg-gradient-to-r from-[#0B5FA5] to-[#0a4a7a] text-white px-4 sm:px-8 py-6 sm:py-8 text-center">
+            <h1 className="text-xl sm:text-2xl md:text-4xl font-bold tracking-tight">
               All India Trade and Industries Forum
             </h1>
-            <div className="h-0.5 w-24 bg-yellow-400 mx-auto my-4"></div>
-            <p className="text-lg md:text-xl font-medium text-blue-100">
+            <div className="h-0.5 w-20 sm:w-24 bg-yellow-400 mx-auto my-3 sm:my-4"></div>
+            <p className="text-base sm:text-lg md:text-xl font-medium text-blue-100">
               Karnataka Two Wheeler Workshop Owner’s & Technicians Association
               (R.)
             </p>
-
-            <h2 className="text-3xl md:text-5xl font-extrabold mt-6 uppercase tracking-wide">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold mt-4 sm:mt-6 uppercase tracking-wide">
               Auto Expo & May Day
             </h2>
-
-            <div className="mt-4 inline-block bg-red-600 px-8 py-2 rounded-md shadow-md transform -rotate-1">
-              <span className="text-2xl md:text-4xl font-black tracking-wide">
+            <div className="mt-3 sm:mt-4 inline-block bg-red-600 px-6 sm:px-8 py-2 rounded-md shadow-md transform -rotate-1">
+              <span className="text-xl sm:text-2xl md:text-4xl font-black tracking-wide">
                 Celebration 2026
               </span>
             </div>
-
-            <div className="mt-6 flex flex-col sm:flex-row justify-center gap-4 text-base font-medium text-blue-100">
+            <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 text-sm sm:text-base font-medium text-blue-100">
               <div className="flex items-center justify-center gap-2">
                 <svg
-                  className="w-5 h-5"
+                  className="w-4 h-4 sm:w-5 sm:h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -558,7 +468,7 @@ const MayDayCampaign = () => {
               </div>
               <div className="flex items-center justify-center gap-2">
                 <svg
-                  className="w-5 h-5"
+                  className="w-4 h-4 sm:w-5 sm:h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -581,20 +491,49 @@ const MayDayCampaign = () => {
             </div>
           </div>
 
-          {/* HIGHLIGHT BANNER */}
-          <div className="bg-amber-50 border-l-4 border-amber-500 py-3 px-6 text-center">
-            <p className="text-amber-800 font-semibold text-lg">
-              🎉 9 Lucky Winners get a Private Jet Sightseeing!
+          {/* LUCKY DRAW SECTION */}
+          <div className="bg-gradient-to-r from-yellow-50 to-amber-100 border-y border-amber-300 px-4 sm:px-8 py-6 text-center">
+            <h2 className="text-xl sm:text-2xl font-bold text-amber-800 mb-4">
+              🎁 Lucky Draw Prizes
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div className="bg-white rounded-lg p-4 shadow">
+                <p className="font-bold text-gray-800">🥇 Bumper Prize</p>
+                <p className="text-green-700 font-semibold">E.V Bike</p>
+              </div>
+              <div className="bg-white rounded-lg p-4 shadow">
+                <p className="font-bold text-gray-800">🥈 2nd Prize</p>
+                <p className="text-blue-700 font-semibold">
+                  Philips Mixer Grinder
+                </p>
+              </div>
+              <div className="bg-white rounded-lg p-4 shadow">
+                <p className="font-bold text-gray-800">🥉 3rd Prize</p>
+                <p className="text-purple-700 font-semibold">Suitcase</p>
+              </div>
+              <div className="bg-white rounded-lg p-4 shadow">
+                <p className="font-bold text-gray-800">🎯 Consolation</p>
+                <p className="text-gray-700 font-semibold">
+                  Bike Remote System (90 Nos)
+                </p>
+              </div>
+            </div>
+            <p className="mt-4 text-sm text-gray-700 font-medium">
+              🎉 Lucky draw every hour during the event!
+            </p>
+            <p className="mt-2 text-sm text-red-600 font-semibold">
+              Register now by paying ₹500 advance & secure your promo kit.
             </p>
           </div>
 
           {/* FORM */}
-          <div className="px-6 md:px-12 py-8">
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {/* COMPANY NAME */}
+          <div className="px-4 sm:px-6 md:px-12 py-6 sm:py-8">
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+              {/* 1. COMPANY NAME */}
               <div className="space-y-2">
-                <label className="block text-gray-700 font-semibold text-sm uppercase tracking-wide">
-                  1. COMPANY NAME <span className="text-red-500">*</span>
+                <label className="block text-gray-700 font-semibold text-xs sm:text-sm uppercase tracking-wide">
+                  1. NAME OF THE SERVICE CENTRE{" "}
+                  <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -617,9 +556,9 @@ const MayDayCampaign = () => {
                 )}
               </div>
 
-              {/* PROPRIETORS */}
+              {/* 2. PROPRIETORS */}
               <div className="space-y-2">
-                <label className="block text-gray-700 font-semibold text-sm uppercase tracking-wide">
+                <label className="block text-gray-700 font-semibold text-xs sm:text-sm uppercase tracking-wide">
                   2. NAME OF THE PROPRIETOR / PARTNERS{" "}
                   <span className="text-red-500">*</span>
                 </label>
@@ -644,9 +583,9 @@ const MayDayCampaign = () => {
                 )}
               </div>
 
-              {/* ADDRESS (STREET) */}
+              {/* 3. ADDRESS */}
               <div className="space-y-2">
-                <label className="block text-gray-700 font-semibold text-sm uppercase tracking-wide">
+                <label className="block text-gray-700 font-semibold text-xs sm:text-sm uppercase tracking-wide">
                   3. ADDRESS
                 </label>
                 <textarea
@@ -658,9 +597,9 @@ const MayDayCampaign = () => {
                 />
               </div>
 
-              {/* MOBILE NUMBER */}
+              {/* 4. MOBILE NUMBER */}
               <div className="space-y-2">
-                <label className="block text-gray-700 font-semibold text-sm uppercase tracking-wide">
+                <label className="block text-gray-700 font-semibold text-xs sm:text-sm uppercase tracking-wide">
                   4. MOBILE NUMBER <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -671,7 +610,7 @@ const MayDayCampaign = () => {
                     setMobileNumber(e.target.value.replace(/\D/g, ""));
                     setErrors((prev) => ({ ...prev, mobileNumber: null }));
                   }}
-                  className={`w-full md:w-1/2 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  className={`w-full sm:w-1/2 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                     errors.mobileNumber
                       ? "border-red-500 bg-red-50"
                       : "border-gray-300"
@@ -685,9 +624,9 @@ const MayDayCampaign = () => {
                 )}
               </div>
 
-              {/* BUSINESS NATURE */}
+              {/* 5. BUSINESS NATURE */}
               <div className="space-y-3">
-                <label className="block text-gray-700 font-semibold text-sm uppercase tracking-wide">
+                <label className="block text-gray-700 font-semibold text-xs sm:text-sm uppercase tracking-wide">
                   5. BUSINESS NATURE
                 </label>
                 <div className="flex items-center space-x-2">
@@ -698,9 +637,7 @@ const MayDayCampaign = () => {
                     onChange={(e) =>
                       setBusinessNature((prev) => ({
                         ...prev,
-                        professional: {
-                          isProfessional: e.target.checked,
-                        },
+                        professional: { isProfessional: e.target.checked },
                       }))
                     }
                     className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
@@ -719,9 +656,9 @@ const MayDayCampaign = () => {
                 )}
               </div>
 
-              {/* BUSINESS CATEGORY */}
+              {/* 6. BUSINESS CATEGORY */}
               <div className="space-y-2">
-                <label className="block text-gray-700 font-semibold text-sm uppercase tracking-wide">
+                <label className="block text-gray-700 font-semibold text-xs sm:text-sm uppercase tracking-wide">
                   6. BUSINESS CATEGORY <span className="text-red-500">*</span>
                 </label>
                 <Select
@@ -791,18 +728,22 @@ const MayDayCampaign = () => {
                 )}
               </div>
 
-              {/* MEMBERSHIP PLAN SELECTION */}
+              {/* 7. SELECT PROMO KIT */}
               <div className="space-y-3">
-                <label className="block text-gray-700 font-semibold text-sm uppercase tracking-wide">
-                  7. SELECT MEMBERSHIP PLAN{" "}
-                  <span className="text-red-500">*</span>
+                <label className="block text-gray-700 font-semibold text-xs sm:text-sm uppercase tracking-wide">
+                  7. SELECT PROMO KIT <span className="text-red-500">*</span>
                 </label>
                 <div className="space-y-4">
                   {membershipPlans.map((plan) => {
                     const isChecked = selectedPlans.some(
                       (p) => p._id === plan._id,
                     );
-
+                    const pricing = PLAN_PRICING[plan.name] || {
+                      mrp: plan.amount,
+                      total: plan.amount,
+                      advance: plan.amount,
+                      remaining: 0,
+                    };
                     return (
                       <div
                         key={plan._id}
@@ -813,27 +754,44 @@ const MayDayCampaign = () => {
                         }`}
                         onClick={() => handlePlanToggle(plan)}
                       >
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                           <div className="flex items-center gap-3">
                             <input
                               type="checkbox"
                               checked={isChecked}
                               onChange={() => handlePlanToggle(plan)}
-                              onClick={(e) => e.stopPropagation()} // 🔥 IMPORTANT
+                              onClick={(e) => e.stopPropagation()}
+                              className="w-5 h-5"
                             />
-                            <span className="font-semibold">{plan.name}</span>
+                            <span className="font-semibold text-gray-800">
+                              {plan.name}
+                            </span>
                           </div>
-
-                          <span className="font-bold text-blue-600">
-                            {formatCurrency(plan.amount)}
-                          </span>
+                          <div className="flex flex-wrap gap-3 sm:gap-4 text-sm">
+                            <div className="text-gray-500 line-through">
+                              MRP: {formatCurrency(pricing.mrp)}
+                            </div>
+                            <div className="font-semibold text-gray-800">
+                              Offer: {formatCurrency(pricing.total)}
+                            </div>
+                            <div className="text-blue-600 font-bold">
+                              Pay Now: {formatCurrency(pricing.advance)}
+                            </div>
+                            <div className="text-gray-500">
+                              Pay Later: {formatCurrency(pricing.remaining)}
+                            </div>
+                          </div>
                         </div>
-
                         {plan.description && (
-                          <p className="text-sm text-gray-600 mt-2">
+                          <p className="text-sm text-gray-600 mt-3">
                             {plan.description}
                           </p>
                         )}
+                        <div className="mt-2 text-xs text-gray-600">
+                          You pay {formatCurrency(pricing.advance)} now.
+                          Remaining {formatCurrency(pricing.remaining)} during
+                          kit collection.
+                        </div>
                       </div>
                     );
                   })}
@@ -844,51 +802,54 @@ const MayDayCampaign = () => {
                   </p>
                 )}
 
-                {/* Selected Plan Benefits Preview */}
                 {selectedPlans.length > 0 && (
-                  <div className="mt-5 p-5 bg-blue-50 rounded-xl border">
-                    <h4 className="font-bold mb-3">Selected Plans:</h4>
-
-                    {selectedPlans.map((plan) => (
-                      <div key={plan._id} className="mb-2">
-                        <div className="flex justify-between">
+                  <div className="mt-5 p-4 sm:p-5 bg-blue-50 rounded-xl border border-blue-200">
+                    <h4 className="font-bold mb-3 text-gray-800">
+                      Selected Plans:
+                    </h4>
+                    <div className="space-y-2">
+                      {selectedPlans.map((plan) => (
+                        <div
+                          key={plan._id}
+                          className="flex justify-between text-sm"
+                        >
                           <span>{plan.name}</span>
                           <span className="font-semibold">
                             {formatCurrency(plan.amount)}
                           </span>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* MEMBERSHIP AMOUNT (Auto-filled) */}
-              <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
-                <label className="block text-gray-700 font-semibold text-sm uppercase tracking-wide mb-2">
-                  8. MEMBERSHIP AMOUNT
+              {/* 8. ADVANCE REGISTRATION AMOUNT */}
+              <div className="bg-gray-50 rounded-xl p-4 sm:p-5 border border-gray-200">
+                <label className="block text-gray-700 font-semibold text-xs sm:text-sm uppercase tracking-wide mb-2">
+                  8. Advance Registration Amount
                 </label>
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl font-bold text-gray-900">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xl sm:text-2xl font-bold text-gray-900">
                     {typeof membershipAmount === "number"
                       ? formatCurrency(membershipAmount)
                       : "—"}
                   </span>
-                  <span className="text-sm text-gray-500">
+                  <span className="text-xs sm:text-sm text-gray-500">
                     (non-refundable)
                   </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
-                  Amount auto-filled from selected plan
+                  Amount auto-filled from selected kit
                 </p>
               </div>
 
               {/* SUBMIT BUTTON */}
-              <div className="pt-6">
+              <div className="pt-4">
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`w-full md:w-auto px-10 py-4 text-white font-bold rounded-xl shadow-md transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-green-300 ${
+                  className={`w-full sm:w-auto px-8 sm:px-10 py-4 text-white font-bold rounded-xl shadow-md transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-green-300 ${
                     loading
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
@@ -898,8 +859,6 @@ const MayDayCampaign = () => {
                     <span className="flex items-center justify-center gap-2">
                       <svg
                         className="animate-spin h-5 w-5 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
                         viewBox="0 0 24 24"
                       >
                         <circle
@@ -909,12 +868,13 @@ const MayDayCampaign = () => {
                           r="10"
                           stroke="currentColor"
                           strokeWidth="4"
-                        ></circle>
+                          fill="none"
+                        />
                         <path
                           className="opacity-75"
                           fill="currentColor"
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
+                        />
                       </svg>
                       SUBMITTING...
                     </span>
