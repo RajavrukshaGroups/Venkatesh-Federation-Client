@@ -123,7 +123,6 @@
 
 // export default App;
 
-
 import React, { useEffect } from "react";
 import {
   BrowserRouter,
@@ -156,9 +155,9 @@ import MemberProfile from "./pages/Member/MemberProfile";
 import MemberForgotPassword from "./pages/Member/MemberForgotPassword";
 import MemberResetPassword from "./pages/Member/MemberResetPassword";
 
-
 import BackToTop from "./components/BackToTop";
 import ContactEmailIcons from "./components/ContactEmailIcons";
+import MayDayCampaign from "./pages/MayDayCampaign";
 
 /* ---------------- SCROLL TO TOP ---------------- */
 
@@ -189,6 +188,7 @@ const App = () => {
             path="/membership-registration/:referrerId?"
             element={<MembershipRegistration />}
           />
+          <Route path="/may-day-celebration" element={<MayDayCampaign />} />
           <Route path="/team" element={<Team />} />
           <Route path="/international" element={<International />} />
           <Route path="/ylf" element={<YLF />} />
