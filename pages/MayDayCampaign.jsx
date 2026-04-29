@@ -30,6 +30,9 @@ const MayDayCampaign = () => {
   const [isCustomCategory, setIsCustomCategory] = useState(false);
   const [customCategoryName, setCustomCategoryName] = useState("");
 
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [generatedId, setGeneratedId] = useState("");
+
   /* =========================
      BUSINESS STATES
   ========================= */
@@ -367,10 +370,25 @@ const MayDayCampaign = () => {
           : { source: "ADMIN" },
       };
 
-      const orderRes = await api.post("/admin/payment/mayday/create-order", {
-        formData: { ...registrationData, selectedPlans },
-        amount: membershipAmount,
-      });
+      let orderRes;
+      try {
+        orderRes = await api.post("/admin/payment/mayday/create-order", {
+          formData: { ...registrationData, selectedPlans },
+          amount: membershipAmount,
+        });
+      } catch (err) {
+        console.log("error", err);
+        const data = err;
+
+        // if (data) {
+        //   setGeneratedId(data);
+        //   setShowSuccessModal(true);
+        //   return;
+        // }
+
+        const msg = data || "Something went wrong. Please try again.";
+        toast.error(msg);
+      }
 
       if (!orderRes.success) {
         toast.error("Failed to initiate payment");
@@ -388,10 +406,45 @@ const MayDayCampaign = () => {
         name: "All India Trade and Industries Forum",
         description: selectedPlans.map((p) => p.name).join(", "),
         order_id: orderRes.orderId,
-        handler: function () {
-          toast.success("Payment successful .");
-          resetForm();
-          navigate("/may-day-celebration", { replace: true });
+        handler: async function (response) {
+          try {
+            toast.success("Payment successful!");
+
+            // 🔥 Retry function to wait for webhook
+            const fetchUniqueId = async (retries = 6) => {
+              try {
+                const res = await api.get(
+                  `/admin/payment/mayday/order/${orderRes.orderId}`,
+                );
+                console.log("response", res);
+
+                const uniqueId = res.data?.uniqueId;
+
+                if (uniqueId) {
+                  // ✅ SUCCESS → SHOW MODAL
+                  setGeneratedId(uniqueId);
+                  setShowSuccessModal(true);
+                  return;
+                }
+
+                // ⏳ Retry if not ready
+                if (retries > 0) {
+                  setTimeout(() => fetchUniqueId(retries - 1), 1500);
+                } else {
+                  toast.error(
+                    "Payment done, but ID not generated yet. Please contact support.",
+                  );
+                }
+              } catch (err) {
+                console.error(err);
+              }
+            };
+
+            // 🚀 Start polling
+            fetchUniqueId();
+          } catch (err) {
+            console.error(err);
+          }
         },
         prefill: {
           name: companyName,
@@ -421,6 +474,12 @@ const MayDayCampaign = () => {
       total: 2000,
       advance: 500,
       remaining: 1500,
+    },
+    "EV CURE PROMO KIT": {
+      mrp: 25000,
+      total: 10000,
+      advance: 2000,
+      remaining: 8000,
     },
   };
 
@@ -893,6 +952,69 @@ const MayDayCampaign = () => {
           </div>
         </div>
       </div>
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-[90%] max-w-md p-6 text-center animate-fadeIn">
+            {/* ICON */}
+            <div className="text-green-600 text-5xl mb-3">🎉</div>
+
+            {/* TITLE */}
+            <h2 className="text-xl font-bold text-gray-800 mb-2">
+              Registration Successful!
+            </h2>
+
+            {/* UNIQUE ID */}
+            <p className="text-sm text-gray-600 mb-2">Your Registration ID</p>
+
+            <div className="bg-gray-100 border rounded-lg px-4 py-3 font-bold text-lg text-blue-700 tracking-wide">
+              {generatedId}
+            </div>
+
+            {/* DESCRIPTION */}
+            <p className="text-xs text-gray-500 mt-3">
+              Please save or share this ID for lucky draw participation
+            </p>
+
+            {/* BUTTONS */}
+            <div className="mt-5 flex flex-col gap-3">
+              {/* COPY */}
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(generatedId);
+                  toast.success("Copied to clipboard!");
+                }}
+                className="w-full py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm font-semibold"
+              >
+                Copy ID
+              </button>
+
+              {/* WHATSAPP */}
+              <button
+                onClick={() => {
+                  const message = `Hello, I have registered for May Day Event.\nMy Registration ID: ${generatedId}`;
+                  const url = `https://wa.me/917013911624?text=${encodeURIComponent(message)}`;
+                  window.open(url, "_blank");
+                }}
+                className="w-full py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold"
+              >
+                Share on WhatsApp
+              </button>
+
+              {/* CLOSE */}
+              <button
+                onClick={() => {
+                  setShowSuccessModal(false);
+                  resetForm();
+                  navigate("/may-day-celebration", { replace: true });
+                }}
+                className="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
