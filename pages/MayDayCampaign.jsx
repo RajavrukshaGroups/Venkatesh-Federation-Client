@@ -992,7 +992,7 @@ const MayDayCampaign = () => {
               <button
                 onClick={() => {
                   const message = `Hello, I have registered for May Day Event.\nMy Registration ID: ${generatedId}`;
-                  const url = `https://wa.me/917013911624?text=${encodeURIComponent(message)}`;
+                  const url = `https://wa.me/919845105338?text=${encodeURIComponent(message)}`;
                   window.open(url, "_blank");
                 }}
                 className="w-full py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold"
