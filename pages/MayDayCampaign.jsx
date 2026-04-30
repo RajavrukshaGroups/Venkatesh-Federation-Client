@@ -32,6 +32,7 @@ const MayDayCampaign = () => {
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [generatedId, setGeneratedId] = useState("");
+  const [isLuckyDraw, setIsLuckyDraw] = useState(false);
 
   /* =========================
      BUSINESS STATES
@@ -72,6 +73,8 @@ const MayDayCampaign = () => {
   const [planLoading, setPlanLoading] = useState(false);
   const [showPlanBenefits, setShowPlanBenefits] = useState(false);
   const [selectedPlanBenefits, setSelectedPlanBenefits] = useState([]);
+
+  const [nearbyShop, setNearbyShop] = useState("");
 
   const [errors, setErrors] = useState({});
 
@@ -121,10 +124,13 @@ const MayDayCampaign = () => {
         );
         if (response.success) {
           const plans = response.data || [];
-          const promoPlans = plans.filter((p) =>
-            p.name?.toLowerCase().includes("promo kit"),
-          );
-          setMembershipPlans(promoPlans);
+          const filteredPlans = plans.filter((p) => {
+            const name = p.name?.toLowerCase();
+
+            return name.includes("promo kit") || name.includes("ev cure");
+          });
+
+          setMembershipPlans(filteredPlans);
         } else {
           toast.error("Failed to load membership plans");
         }
@@ -214,13 +220,21 @@ const MayDayCampaign = () => {
     setSelectedPlans((prev) => {
       const exists = prev.find((p) => p._id === plan._id);
       let updatedPlans;
+
       if (exists) {
         updatedPlans = prev.filter((p) => p._id !== plan._id);
       } else {
         updatedPlans = [...prev, plan];
       }
+
+      // ✅ IMPORTANT: If selecting plan → uncheck lucky draw
+      if (updatedPlans.length > 0) {
+        setIsLuckyDraw(false);
+      }
+
       const total = updatedPlans.reduce((sum, p) => sum + Number(p.amount), 0);
       setMembershipAmount(total);
+
       return updatedPlans;
     });
   };
@@ -284,8 +298,11 @@ const MayDayCampaign = () => {
       newErrors.businessCategory = "Business category is required";
     }
 
-    if (selectedPlans.length === 0) {
-      newErrors.selectedPlans = "Select at least one plan";
+    // if (selectedPlans.length === 0) {
+    //   newErrors.selectedPlans = "Select at least one plan";
+    // }
+    if (selectedPlans.length === 0 && !isLuckyDraw) {
+      newErrors.selectedPlans = "Select plan or lucky draw";
     }
 
     setErrors(newErrors);
@@ -302,6 +319,7 @@ const MayDayCampaign = () => {
     setDistrict("");
     setTaluk("");
     setStreet("");
+    setNearbyShop("");
     setCompanyName("");
     setProprietors("");
     setMobileNumber("");
@@ -332,6 +350,7 @@ const MayDayCampaign = () => {
     setIsCustomCategory(false);
     setCustomCategoryName("");
     setErrors({});
+    setIsLuckyDraw(false);
   };
 
   const handleSubmit = async (e) => {
@@ -351,6 +370,7 @@ const MayDayCampaign = () => {
         companyName,
         proprietors,
         address: { street, pin, state, district, taluk },
+        nearbyShop,
         mobileNumber,
         email,
         businessCategory,
@@ -373,18 +393,19 @@ const MayDayCampaign = () => {
       let orderRes;
       try {
         orderRes = await api.post("/admin/payment/mayday/create-order", {
-          formData: { ...registrationData, selectedPlans },
+          formData: { ...registrationData, selectedPlans, isLuckyDraw },
           amount: membershipAmount,
         });
+        console.log("order res", orderRes);
+        // ✅ LUCKY DRAW → NO PAYMENT
+        if (orderRes?.isLuckyDraw) {
+          setGeneratedId(orderRes.uniqueId);
+          setShowSuccessModal(true);
+          return; // ❌ STOP HERE (no Razorpay)
+        }
       } catch (err) {
         console.log("error", err);
         const data = err;
-
-        // if (data) {
-        //   setGeneratedId(data);
-        //   setShowSuccessModal(true);
-        //   return;
-        // }
 
         const msg = data || "Something went wrong. Please try again.";
         toast.error(msg);
@@ -456,8 +477,10 @@ const MayDayCampaign = () => {
         },
       };
 
-      const razorpay = new window.Razorpay(options);
-      razorpay.open();
+      if (!isLuckyDraw) {
+        const razorpay = new window.Razorpay(options);
+        razorpay.open();
+      }
     } catch (err) {
       console.log("Payment error:", err);
       toast.error(err || "Payment failed");
@@ -466,16 +489,45 @@ const MayDayCampaign = () => {
     }
   };
 
+  // const PLAN_PRICING = {
+  //   "NGK PROMO KIT": { mrp: 3550, total: 2000, advance: 500, remaining: 1500 },
+  //   "SKAS PROMO KIT": { mrp: 3080, total: 2000, advance: 500, remaining: 1500 },
+  //   "KING QUALITY PROMO KIT": {
+  //     mrp: 3065,
+  //     total: 2000,
+  //     advance: 500,
+  //     remaining: 1500,
+  //   },
+  //   "EV CURE PROMO KIT": {
+  //     mrp: 25000,
+  //     total: 10000,
+  //     advance: 2000,
+  //     remaining: 8000,
+  //   },
+  // };
+
   const PLAN_PRICING = {
-    "NGK PROMO KIT": { mrp: 3550, total: 2000, advance: 500, remaining: 1500 },
-    "SKAS PROMO KIT": { mrp: 3080, total: 2000, advance: 500, remaining: 1500 },
+    "NGK PROMO KIT": {
+      mrp: 3550,
+      total: 2300,
+      advance: 500,
+      remaining: 1800,
+    },
+    "SKAS PROMO KIT": {
+      mrp: 3080,
+      total: 2300,
+      advance: 500,
+      remaining: 1800,
+    },
     "KING QUALITY PROMO KIT": {
       mrp: 3065,
-      total: 2000,
+      total: 2300,
       advance: 500,
-      remaining: 1500,
+      remaining: 1800,
     },
-    "EV CURE PROMO KIT": {
+
+    // KEEP EV CURE AS IS
+    "EV CURE FRANCHISEE (FREE TRAINING)": {
       mrp: 25000,
       total: 10000,
       advance: 2000,
@@ -653,6 +705,21 @@ const MayDayCampaign = () => {
                   onChange={(e) => setStreet(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Street, Area, Locality"
+                />
+              </div>
+
+              {/* 3A. NEARBY AUTOMOBILE SHOP (OPTIONAL) */}
+              <div className="space-y-2">
+                <label className="block text-gray-700 font-semibold text-xs sm:text-sm uppercase tracking-wide">
+                  Nearby Automobile Shop
+                </label>
+
+                <textarea
+                  rows={2}
+                  value={nearbyShop}
+                  onChange={(e) => setNearbyShop(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter nearby shop name or landmark (optional)"
                 />
               </div>
 
@@ -883,6 +950,32 @@ const MayDayCampaign = () => {
                 )}
               </div>
 
+              <div
+                className="p-4 border rounded-xl bg-yellow-50 border-yellow-300 cursor-pointer"
+                onClick={() => {
+                  const newValue = !isLuckyDraw;
+                  setIsLuckyDraw(newValue);
+
+                  // ✅ If selecting lucky draw → clear plans
+                  if (newValue) {
+                    setSelectedPlans([]);
+                    setMembershipAmount(0);
+                  }
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={isLuckyDraw}
+                    readOnly
+                    className="w-5 h-5"
+                  />
+                  <span className="font-bold text-yellow-800">
+                    🎁 Participate in Lucky Draw (FREE)
+                  </span>
+                </div>
+              </div>
+
               {/* 8. ADVANCE REGISTRATION AMOUNT */}
               <div className="bg-gray-50 rounded-xl p-4 sm:p-5 border border-gray-200">
                 <label className="block text-gray-700 font-semibold text-xs sm:text-sm uppercase tracking-wide mb-2">
@@ -1012,6 +1105,36 @@ const MayDayCampaign = () => {
                 Done
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {loading && (
+        <div className="fixed inset-0 z-[999] bg-black/40 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-white rounded-xl px-6 py-5 shadow-xl flex flex-col items-center gap-3">
+            <svg
+              className="animate-spin h-8 w-8 text-blue-600"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+                fill="none"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.3 0 0 5.3 0 12h4z"
+              />
+            </svg>
+
+            <p className="text-sm font-semibold text-gray-700">
+              Processing your request...
+              Please do not refresh or go back
+            </p>
           </div>
         </div>
       )}
