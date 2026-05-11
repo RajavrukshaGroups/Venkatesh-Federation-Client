@@ -120,6 +120,20 @@ const MembershipRegistration = () => {
         );
 
         if (response.success) {
+          // const plans = response.data || [];
+          // setMembershipPlans(plans);
+
+          // // ✅ AUTO SELECT MAX AMOUNT PLAN
+          // if (plans.length > 0) {
+          //   const maxPlan = plans.reduce((prev, curr) =>
+          //     curr.amount > prev.amount ? curr : prev,
+          //   );
+
+          //   setSelectedPlan(maxPlan);
+          //   setMembershipAmount(Number(maxPlan.amount));
+          //   setSelectedPlanBenefits(maxPlan.benefits || []);
+          //   setShowPlanBenefits(true);
+          // }
           const plans = response.data || [];
           setMembershipPlans(plans);
 
@@ -299,9 +313,19 @@ const MembershipRegistration = () => {
 
   console.log("membership plans", membershipPlans);
 
-  const planOptions = membershipPlans.map((plan) => ({
+  // const planOptions = membershipPlans.map((plan) => ({
+  //   value: plan._id,
+  //   label: plan.name, // 🔥 keep label SIMPLE
+  //   data: plan,
+  // }));
+
+  const filteredMembershipPlans = membershipPlans.filter((plan) =>
+    plan.name?.toUpperCase().endsWith("MEMBERSHIP"),
+  );
+
+  const planOptions = filteredMembershipPlans.map((plan) => ({
     value: plan._id,
-    label: plan.name, // 🔥 keep label SIMPLE
+    label: plan.name,
     data: plan,
   }));
 
@@ -370,7 +394,8 @@ const MembershipRegistration = () => {
       newErrors.selectedPlan = "Please select a membership plan";
 
     if (!majorCommodities.some((c) => c.trim())) {
-      newErrors.majorCommodities = "At least one major commodity or services is required";
+      newErrors.majorCommodities =
+        "At least one major commodity or services is required";
     }
 
     // GST
