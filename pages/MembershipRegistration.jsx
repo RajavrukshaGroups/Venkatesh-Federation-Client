@@ -195,16 +195,19 @@ const MembershipRegistration = () => {
 
     try {
       setPinLoading(true);
-      const res = await fetch(
-        `https://api.postalpincode.in/pincode/${pincode}`,
-      );
-      const data = await res.json();
+      // const res = await fetch(
+      //   `https://api.postalpincode.in/pincode/${pincode}`,
+      // );
+      const response = await api.get(`/users/pincode/${pincode}`);
+      console.log("response", response);
+      const result = response?.data;
+      console.log("result", result);
 
-      if (data[0]?.Status === "Success") {
-        const info = data[0].PostOffice[0];
-        setState(info.State);
-        setDistrict(info.District);
-        setTaluk(info.Block || "");
+      if (response?.success) {
+        const info = result;
+        setState(info.state || "");
+        setDistrict(info.district || "");
+        setTaluk(info.taluk || "");
       } else {
         resetAddress();
         toast.error("Invalid PIN Code");
@@ -701,8 +704,9 @@ const MembershipRegistration = () => {
                   <span>STATE</span>
                   <input
                     value={state}
-                    readOnly
-                    className="border-b-2 border-dotted px-2 uppercase bg-gray-50"
+                    // readOnly
+                    onChange={(e) => setState(e.target.value)}
+                    className="border-b-2 border-dotted px-2 uppercase"
                   />
                 </div>
 
@@ -710,8 +714,9 @@ const MembershipRegistration = () => {
                   <span>DISTRICT</span>
                   <input
                     value={district}
-                    readOnly
-                    className="border-b-2 border-dotted px-2 uppercase bg-gray-50"
+                    // readOnly
+                    onChange={(e) => setDistrict(e.target.value)}
+                    className="border-b-2 border-dotted px-2 uppercase"
                   />
                 </div>
 
